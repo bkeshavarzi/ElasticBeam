@@ -20,6 +20,7 @@ class Q8_Element : public Q4_Element,Q9_Element
         void SetMat(ElasticMaterial);
         ElasticMaterial GetMat(void);
         void SetNodalObj(vector <Node>);
+        vector <Node> GetNodalObj(void);
         double Calc_ShapeFunction(int,int,double,double);
         double Calc_DiffN(int,int,double,double,string);
         MatrixXd Calc_BMatrix(double,double);

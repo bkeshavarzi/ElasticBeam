@@ -16,7 +16,7 @@ class Q4_Element
     public:
 
         Q4_Element();
-        Q4_Element(int,double,double,vector <Node>);
+        Q4_Element(int,double,vector <Node>,ElasticMaterial);
         void SetId(int);
         int GetId(void);
         void Setth(double);
@@ -26,10 +26,13 @@ class Q4_Element
         void SetMat(ElasticMaterial);
         ElasticMaterial GetMat(void);
         void SetNodalObj(vector <Node>);
+        vector <Node> GetNodalObj(void);
         double Calc_ShapeFunction(int,int,double,double);
         double Calc_DiffN(int,int,double,double,string);
         MatrixXd Calc_BMatrix(double,double);
         void SetDMatrix(string);
+        void Setlocalcord(void);
+        MatrixXd Getlocalcord();
         void Calc_LSM();
         MatrixXd Get_LSM();
         void SetU(MatrixXd);
@@ -47,9 +50,10 @@ class Q4_Element
         int id;
         vector <Node> NodeObj;
         ElasticMaterial mat;
-        double E,v,gama,th;
+        double E,v,gama,th,a,b;
         double gpt [2]={-1/sqrt(3),1/sqrt(3)};
         double wgpt[2]={1,1};
+        MatrixXd localcord=MatrixXd::Zero(2,4);
         MatrixXd LSM=MatrixXd::Zero(8,8);
         MatrixXd B=MatrixXd::Zero(3,8);
         MatrixXd D=MatrixXd::Zero(3,3);

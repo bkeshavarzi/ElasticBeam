@@ -35,6 +35,7 @@ class CSE_Element
         MatrixXd GetBMatrix(void);
         void SetDMatrix_PlaneStress();
         void SetDMatrix_PlaneStrain();
+        void SetFECalc(string);
         MatrixXd GetDMatrix();
         void SetLSM();
         MatrixXd GetLSM();

@@ -13,7 +13,7 @@ using namespace Eigen;
 
 //Make node class...Done
 //Mesh structures...DONE
-//Make element class(Q4..., Q8..., Q9..., CSE...CHECKED)...DONE
+//Make element class(Q4...DONE, Q8..., Q9...DONE, CSE...DONE)...DONE
 //Read node file...DONE
 //Read element file...DONE
 //Make stiffness matrix
@@ -25,5 +25,12 @@ using namespace Eigen;
 
 int main()
 {
-    return 0;
+    ElasticMaterial mat(2e9,0.3,0);
+    vector <Node> NV=ReadNodeFile("Q9_Node.txt");
+    vector <Q9_Element> EV=ReadQ9Element("Q9_Element.txt",mat,0.02,NV);
+    vector <Node> nv=EV[0].GetNodalObj();
+    EV[0].Setlocalcord();
+    //cout << EV[0].Calc_DiffN(-1,-1,-1*sqrt(0.6),-1*sqrt(0.6),"eta") << endl;
+    //MatrixXd B =EV[0].Calc_BMatrix(-1*sqrt(0.6),-1*sqrt(0.6));
+    //cout << B.block(0,0,3,2) <<endl;
 }

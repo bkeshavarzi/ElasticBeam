@@ -49,6 +49,10 @@ void Q8_Element::SetNodalObj(vector <Node> obj)
 {
     NodeObj=obj;
 }
+vector <Node> Q8_Element:: GetNodalObj(void)
+{
+    return NodeObj;
+}
 double Q8_Element::Calc_ShapeFunction(int kesi_node,int eta_node,double kesi,double eta) //double Calc_ShapeFunction(int,int,double,double);
 {
     double term=0;

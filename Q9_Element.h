@@ -15,7 +15,7 @@ class Q9_Element
 {
     public:
         Q9_Element();
-        Q9_Element(int,double,vector <Node>);
+        Q9_Element(int,double,vector <Node>,ElasticMaterial);
         void SetId(int);
         int GetId(void);
         void Setth(double);
@@ -25,11 +25,14 @@ class Q9_Element
         void SetMat(ElasticMaterial);
         ElasticMaterial GetMat(void);
         void SetNodalObj(vector <Node>);
+        vector <Node> GetNodalObj(void);
         void SetElemParam(double []);
         double Calc_ShapeFunction(int,int,double,double);
         double Calc_DiffN(int,int,double,double,string);
         MatrixXd Calc_BMatrix(double,double);
         void SetDMatrix(string);
+        void Setlocalcord(void);
+        MatrixXd Getlocalcord();
         void Calc_LSM();
         MatrixXd Get_LSM();
         void SetU(MatrixXd);
@@ -47,9 +50,10 @@ class Q9_Element
         int id;
         vector <Node> NodeObj;
         ElasticMaterial mat;
-        double E,v,gama,th;
+        double E,v,gama,th,a,b;
         double gpt [3]={-1*sqrt(0.6),0,sqrt(0.6)};
         double wgpt[3]={5/9,8/9,5/9};
+        MatrixXd localcord=MatrixXd::Zero(2,9);
         MatrixXd LSM=MatrixXd::Zero(18,18);
         MatrixXd B=MatrixXd::Zero(3,18);
         MatrixXd D=MatrixXd::Zero(3,3);

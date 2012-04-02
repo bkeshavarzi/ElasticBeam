@@ -6,11 +6,12 @@ Q9_Element::Q9_Element()
 {
     //ctor
 }
-Q9_Element::Q9_Element(int i,double thi,vector <Node> obj)
+Q9_Element::Q9_Element(int i,double thi,vector <Node> obj,ElasticMaterial m)
 {
     SetId(i);
     Setth(thi);
     SetNodalObj(obj);
+    SetMat(m);
 }
 int SignFunction(double d)
 {
@@ -58,6 +59,10 @@ void Q9_Element::SetNodalObj(vector <Node> obj)
 {
     NodeObj=obj;
 }
+vector <Node> Q9_Element::GetNodalObj(void)
+{
+    return NodeObj;
+}
 void Q9_Element::SetElemParam(double prop[])
 {
     mat.SetE(prop[0]);
@@ -76,6 +81,8 @@ double Q9_Element::Calc_ShapeFunction(int kesi_node,int eta_node,double kesi,dou
     if (eta_node==-1)  term2=eta*(eta-1);
     if (eta_node==0)   term2=(eta+1)*(eta-1);
     if (eta_node==1)   term2=(eta+1)*(eta);
+
+    cout << term1 << "\t" << term2 << "\t" <<SignFunction(kesi_node)*SignFunction(eta_node) << "\t" <<(1/pow(2,abs(kesi_node)+abs(eta_node)))<<endl;
 
     return SignFunction(kesi_node)*SignFunction(eta_node)*(1/pow(2,abs(kesi_node)+abs(eta_node)))*term1*term2;
 }
@@ -124,6 +131,36 @@ void Q9_Element::SetDMatrix(string str)
         D(1,1)=D(0,0);
         D(2,2)=E/(1+v);
     }
+}
+void Q9_Element::Setlocalcord(void)
+{
+    vector <double> cord;
+    double xmin,xmax,ymin,ymax,xsum,ysum;
+    cord=NodeObj[0].GetCord();
+    xmin=cord[0];xmax=cord[0];ymin=cord[1];ymax=cord[1];xsum=cord[0];ysum=cord[1];
+    localcord(0,0)=cord[0];localcord(1,0)=cord[1];
+
+    for (int inode=1;inode<9;inode++)
+    {
+        cord=NodeObj[inode].GetCord();
+        xmin=(xmin>cord[0]?cord[0]:xmin);
+        xmax=(xmax>cord[0]?xmax:cord[0]);
+        ymin=(ymin>cord[1]?cord[1]:ymin);
+        ymax=(ymax>cord[1]?ymax:cord[1]);
+        xsum+=cord[0];
+        ysum+=cord[1];
+    }
+
+    a=0.5*(xmax-xmin);
+    b=0.5*(ymax-ymin);
+    xsum=xsum/4;
+    ysum=ysum/4;
+    localcord.block(0,0,1,9)=(((localcord.block(0,0,1,9)).array()-xsum)/a).matrix();
+    localcord.block(1,0,1,9)=(((localcord.block(1,0,1,9)).array()-ysum)/b).matrix();
+}
+MatrixXd Q9_Element::Getlocalcord()
+{
+    return localcord;
 }
 void Q9_Element::Calc_LSM()
 {

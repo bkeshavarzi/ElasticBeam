@@ -125,6 +125,14 @@ MatrixXd CSE_Element::GetDMatrix()
 {
     return D;
 }
+void CSE_Element::SetFECalc(string str)
+{
+    SetCMatrix();
+    SetA();
+    SetBMatrix();
+    if (str=="planestrain") SetDMatrix_PlaneStrain();
+    if (str=="planestress") SetDMatrix_PlaneStress();
+}
 void CSE_Element::SetLSM()
 {
     LSM=B.transpose()*D*B*th*A;

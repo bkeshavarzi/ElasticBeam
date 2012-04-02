@@ -6,12 +6,13 @@ Q4_Element::Q4_Element()
 {
     //ctor
 }
-Q4_Element::Q4_Element(int i,double thi,double g, vector <Node> obj)
+Q4_Element::Q4_Element(int i,double thi, vector <Node> obj,ElasticMaterial mat)
 {
     SetId(i);
     Setth(thi);
-    SetGama(g);
+    SetMat(mat);
     SetNodalObj(obj);
+    Setlocalcord();
 }
 void Q4_Element::SetId(int i)
 {
@@ -52,21 +53,25 @@ void Q4_Element::SetNodalObj(vector <Node> obj)
 {
     NodeObj=obj;
 }
+vector <Node> Q4_Element::GetNodalObj(void)
+{
+    return NodeObj;
+}
 double Q4_Element::Calc_ShapeFunction(int kesi_node,int eta_node,double kesi,double eta)
 {
     return 0.25*(1+kesi_node*kesi)*(1+eta_node*eta);
 }
 double Q4_Element::Calc_DiffN(int kesi_node,int eta_node,double kesi,double eta,string str)
 {
-    if (str=="kesi") return (0.25*kesi_node*(1+eta_node*eta));
-    if (str=="eta")  return (0.25*eta_node*(1+kesi_node*kesi));
+    if (str=="kesi") return (1/a)*(0.25*kesi_node*(1+eta_node*eta));
+    if (str=="eta")  return (1/b)*(0.25*eta_node*(1+kesi_node*kesi));
 }
 MatrixXd Q4_Element::Calc_BMatrix(double x_gpt,double y_gpt)
 {
     B(0,0)=Calc_DiffN(-1,-1,x_gpt,y_gpt,"kesi");B(1,1)=Calc_DiffN(-1,-1,x_gpt,y_gpt,"eta");B(2,0)=B(1,1);B(2,1)=B(0,0);
     B(0,2)=Calc_DiffN(1,-1,x_gpt,y_gpt,"kesi");B(1,3)=Calc_DiffN(1,-1,x_gpt,y_gpt,"eta");B(2,2)=B(1,3);B(2,3)=B(0,2);
     B(0,4)=Calc_DiffN(1,1,x_gpt,y_gpt,"kesi");B(1,5)=Calc_DiffN(1,1,x_gpt,y_gpt,"eta");B(2,4)=B(1,5);B(2,5)=B(0,4);
-    B(0,6)=Calc_DiffN(-1,1,x_gpt,y_gpt,"kesi");B(1,7)=Calc_DiffN(-1,1,x_gpt,y_gpt,"eta");B(2,6)=B(1,5);B(2,7)=B(0,6);
+    B(0,6)=Calc_DiffN(-1,1,x_gpt,y_gpt,"kesi");B(1,7)=Calc_DiffN(-1,1,x_gpt,y_gpt,"eta");B(2,6)=B(1,7);B(2,7)=B(0,6);
 
     return B;
 }
@@ -91,17 +96,47 @@ void Q4_Element::SetDMatrix(string str)
         D(2,2)=E/(1+v);
     }
 }
+void Q4_Element::Setlocalcord(void)
+{
+    vector <double> cord;
+    double xmin,xmax,ymin,ymax,xsum,ysum;
+    cord=NodeObj[0].GetCord();
+    xmin=cord[0];xmax=cord[0];ymin=cord[1];ymax=cord[1];xsum=cord[0];ysum=cord[1];
+    localcord(0,0)=cord[0];localcord(1,0)=cord[1];
+
+    for (int inode=1;inode<4;inode++)
+    {
+        cord=NodeObj[inode].GetCord();
+        xmin=(xmin>cord[0]?cord[0]:xmin);
+        xmax=(xmax>cord[0]?xmax:cord[0]);
+        ymin=(ymin>cord[1]?cord[1]:ymin);
+        ymax=(ymax>cord[1]?ymax:cord[1]);
+        xsum+=cord[0];
+        ysum+=cord[1];
+    }
+    a=0.5*(xmax-xmin);
+    b=0.5*(ymax-ymin);
+    xsum=xsum/4;
+    ysum=ysum/4;
+    localcord.block(0,0,1,4)=(((localcord.block(0,0,1,4)).array()-xsum)/a).matrix();
+    localcord.block(1,0,1,4)=(((localcord.block(1,0,1,4)).array()-ysum)/b).matrix();
+}
+MatrixXd Q4_Element::Getlocalcord()
+{
+    return localcord;
+}
 void Q4_Element::Calc_LSM()
 {
     MatrixXd TempB=MatrixXd::Zero(3,8);
     TempB=Calc_BMatrix(gpt[0],gpt[0]);
-    LSM=TempB.transpose()*D*TempB;
+    LSM=gpt[0]*(TempB.transpose())*D*TempB;
     TempB=Calc_BMatrix(gpt[1],gpt[0]);
-    LSM+=TempB.transpose()*D*TempB;
+    LSM+=gpt[1]*(TempB.transpose())*D*TempB;
     TempB=Calc_BMatrix(gpt[1],gpt[1]);
-    LSM+=TempB.transpose()*D*TempB;
+    LSM+=gpt[1]*(TempB.transpose())*D*TempB;
     TempB=Calc_BMatrix(gpt[0],gpt[1]);
-    LSM+=TempB.transpose()*D*TempB;
+    LSM+=gpt[0]*(TempB.transpose())*D*TempB;
+    LSM=((LSM.array())*th).matrix();
 }
 MatrixXd Q4_Element::Get_LSM()
 {
@@ -131,7 +166,7 @@ MatrixXd Q4_Element::Get_Sigma()
 }
 MatrixXd Q4_Element::Get_PSigma(string str)
 {
-    MatrixXd Sigma_Ave=0.5*(Sigma.block(0,0,2,4).colwise().sum()); //n x 1
+    MatrixXd Sigma_Ave=0.5*(Sigma.block(0,0,2,4).colwise().sum()); //1 x n
     MatrixXd R=pow(pow(0.5*(Sigma.block(0,0,1,4).array()-Sigma.block(1,0,1,4).array()),2.0)+pow(Sigma.block(2,0,1,4).array(),2.0),0.5).matrix();
     PSigma.block(0,0,1,4)=Sigma_Ave+R;
     PSigma.block(1,0,1,4)=Sigma_Ave-R;
