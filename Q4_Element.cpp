@@ -1,14 +1,17 @@
 #include "Q4_Element.h"
+using namespace std;
+using namespace Eigen;
 
 Q4_Element::Q4_Element()
 {
     //ctor
 }
-Q4_Element::Q4_Element(int i,vector <Node> obj,double prop[])
+Q4_Element::Q4_Element(int i,double thi,double g, vector <Node> obj)
 {
     SetId(i);
+    Setth(thi);
+    SetGama(g);
     SetNodalObj(obj);
-    SetElemParam(prop);
 }
 void Q4_Element::SetId(int i)
 {
@@ -18,16 +21,36 @@ int Q4_Element::GetId(void)
 {
     return id;
 }
+void Q4_Element::Setth(double t)
+{
+    th=t;
+}
+double Q4_Element::Getth(void)
+{
+    return th;
+}
+void Q4_Element::SetGama(double g)
+{
+    gama=g;
+}
+double Q4_Element::GetGama(void)
+{
+    return gama;
+}
+void Q4_Element::SetMat(ElasticMaterial m)
+{
+    mat=m;
+    E=mat.GetE();
+    v=mat.Getv();
+    gama=mat.GetGama();
+}
+ElasticMaterial Q4_Element::GetMat(void)
+{
+    return mat;
+}
 void Q4_Element::SetNodalObj(vector <Node> obj)
 {
     NodeObj=obj;
-}
-void Q4_Element::SetElemParam(double prop[])
-{
-    mat.SetE(prop[0]);
-    mat.Setv(prop[1]);
-    gama=prop[2];
-    th=prop[3];
 }
 double Q4_Element::Calc_ShapeFunction(int kesi_node,int eta_node,double kesi,double eta)
 {
@@ -35,8 +58,8 @@ double Q4_Element::Calc_ShapeFunction(int kesi_node,int eta_node,double kesi,dou
 }
 double Q4_Element::Calc_DiffN(int kesi_node,int eta_node,double kesi,double eta,string str)
 {
-    if (str=="kesi") return (0.25*kesi_node*(1+eta_node*eta))
-    if (str=="eta")  return (0.25*eta_node*(1+kesi_node*kesi))
+    if (str=="kesi") return (0.25*kesi_node*(1+eta_node*eta));
+    if (str=="eta")  return (0.25*eta_node*(1+kesi_node*kesi));
 }
 MatrixXd Q4_Element::Calc_BMatrix(double x_gpt,double y_gpt)
 {
@@ -49,6 +72,7 @@ MatrixXd Q4_Element::Calc_BMatrix(double x_gpt,double y_gpt)
 }
 void Q4_Element::SetDMatrix(string str)
 {
+    MatrixXd D=MatrixXd::Zero(3,3);
     if (str=="pstrain")
     {
         double factor=E/((1+v)*(1-2*v));
@@ -60,13 +84,12 @@ void Q4_Element::SetDMatrix(string str)
     }
     if (str=="pstress")
     {
-        D(0,0)=(E/(1-pow(v,2.0)));
-        D(0,1)=E/(1-pow(v,2.0)))*v;
+        D(0,0)=(E/(1-pow(v,2)));
+        D(0,1)=E*v/(1-pow(v,2));
         D(1,0)=D(0,1);
         D(1,1)=D(0,0);
         D(2,2)=E/(1+v);
     }
-    return D;
 }
 void Q4_Element::Calc_LSM()
 {
@@ -113,7 +136,7 @@ MatrixXd Q4_Element::Get_PSigma(string str)
     PSigma.block(0,0,1,4)=Sigma_Ave+R;
     PSigma.block(1,0,1,4)=Sigma_Ave-R;
     if (str=="pstrain") PSigma.block(2,0,1,4)=(v*(PSigma.block(0,0,1,4)+PSigma.block(1,0,1,4)).array()).matrix();
-    if (str=="pstress") PSigma.block(2,0,1,4)=MAtrixXd::Zero(1,4);
+    if (str=="pstress") PSigma.block(2,0,1,4)=MatrixXd::Zero(1,4);
 
     return PSigma;
 }
@@ -124,7 +147,7 @@ MatrixXd Q4_Element::Get_PStrain(string str)
     PStrain.block(0,0,1,4)=Strain_Ave+R;
     PStrain.block(1,0,1,4)=Strain_Ave-R;
     if (str=="pstress") PStrain.block(2,0,1,4)=((v/E)*(PSigma.block(0,0,1,4)+PSigma.block(1,0,1,4)).array()).matrix();
-    if (str=="pstrain") PStrain.block(2,0,1,4)=MAtrixXd::Zero(1,4);
+    if (str=="pstrain") PStrain.block(2,0,1,4)=MatrixXd::Zero(1,4);
 
     return PStrain;
 }

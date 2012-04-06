@@ -6,7 +6,7 @@ class ElasticMaterial
 {
     public:
         ElasticMaterial();
-        ElasticMaterial(double=2e9,double=0.3,double=8050); //E,v,density in kg/m^3
+        ElasticMaterial(double,double,double); //E,v,density in kg/m^3
         void SetE(double);
         double GetE(void);
         void Setv(double);

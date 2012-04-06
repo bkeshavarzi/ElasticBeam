@@ -1,20 +1,29 @@
 #ifndef CSE_ELEMENT_H
 #define CSE_ELEMENT_H
+#include <iostream>
 #include "Node.h"
-#include <ElasticMaterial.h>
-#include <Eigen/Cholesky>
+#include "ElasticMaterial.h"
+#include <Eigen/Dense>
 #include <cmath>
 #include <string>
+
+using namespace std;
+using namespace Eigen;
 
 class CSE_Element
 {
     public:
+
         CSE_Element();
         CSE_Element(int,double,vector <Node>,ElasticMaterial); //id,thickness,nodal objects,material
         void SetId(int);
         int GetId(void);
         void Setth(double);
         double Getth(void);
+        void SetGama(double);
+        double GetGama(void);
+        void SetMat(ElasticMaterial);
+        ElasticMaterial GetMat(void);
         void SetNodeObj(Node,Node,Node);
         vector <Node> GetNodeObj(void);
         void SetDof();
@@ -36,7 +45,7 @@ class CSE_Element
         MatrixXd GetStressTensor();
         void CalculatePrinStress(string);
         MatrixXd GetPrinStress();
-        void CalculatePrinStrain();
+        void CalculatePrinStrain(string);
         MatrixXd GetPrinStrain();
         virtual ~CSE_Element();
 

@@ -2,16 +2,20 @@
 
 CSE_Element::CSE_Element()
 {
-
+    //vector <Node> ObjNode=CSE_Element_v[0].GetNodeObj();
+    //CSE_Element obj(1,0.02,ObjNode,mat);
+    //obj.SetDMatrix_PlaneStress();
+    //obj.SetLSM();
 }
-CSE_Element::CSE_Element(int i,double thi,vector <Node> obj,ElasticMaterial m) //id,thickness,nodal objects,material
+CSE_Element::CSE_Element(int i,double thi,vector <Node> obj,ElasticMaterial m)
 {
     SetId(i);
     Setth(thi);
     SetNodeObj(obj[0],obj[1],obj[2]);
-    mat=m;
-    E=m.GetE();
-    v=m.Getv();
+    SetMat(m);
+    SetCMatrix();
+    SetA();
+    SetBMatrix();
 }
 void CSE_Element::SetId(int i)
 {
@@ -21,13 +25,32 @@ int CSE_Element::GetId(void)
 {
     return id;
 }
-void CSE_Element::Setth(double thi);
+void CSE_Element::Setth(double thi)
 {
     th=thi;
 }
 double CSE_Element::Getth(void)
 {
     return th;
+}
+void CSE_Element::SetGama(double g)
+{
+    gama=g;
+}
+double CSE_Element::GetGama(void)
+{
+    return gama;
+}
+void CSE_Element::SetMat(ElasticMaterial m)
+{
+    mat=m;
+    E=m.GetE();
+    v=m.Getv();
+    gama=mat.GetGama();
+}
+ElasticMaterial CSE_Element::GetMat(void)
+{
+    return mat;
 }
 void CSE_Element::SetNodeObj(Node obj1, Node obj2, Node obj3)
 {
@@ -84,7 +107,7 @@ MatrixXd CSE_Element::GetBMatrix(void)
 void CSE_Element::SetDMatrix_PlaneStress()
 {
     D(0,0)=(E/(1-pow(v,2.0)));
-    D(0,1)=E/(1-pow(v,2.0)))*v;
+    D(0,1)=E*v/(1-pow(v,2.0));
     D(1,0)=D(0,1);
     D(1,1)=D(0,0);
     D(2,2)=E/(1+v);
@@ -132,13 +155,13 @@ MatrixXd CSE_Element::GetStressTensor()
 }
 void CSE_Element::CalculatePrinStress(string ptype)
 {
-    double sigma_ave,R;
+    double sigma_ave,R,sigmaZ;
 
     if (ptype=="plane strain") double sigmaZ=v*(Sigma(0)+Sigma(1));
     if (ptype=="plane stress") double sigmaZ=0;
 
     sigma_ave=0.5*(Sigma(0)+Sigma(1));
-    R=sqrt(pow(0.5*(Sigma(0)-Sigma(1),2.0))+Sigma(2));
+    R=pow(pow(0.5*(Sigma(0)-Sigma(1)),2)+pow(Sigma(2),2),0.5);
 
     PSigma(0)=sigma_ave-R;
     PSigma(1)=sigma_ave+R;
@@ -150,13 +173,13 @@ MatrixXd CSE_Element::GetPrinStress()
 }
 void CSE_Element::CalculatePrinStrain(string ptype)
 {
-    double strain_ave,R;
+    double strain_ave,R,strainZ;
 
-    if (ptype=="plane strain") double strainZ=0;
-    if (ptype=="plane stress") double strainZ=(-v/E)*(Sigma(0)+Sigma(1));
+    if (ptype=="plane strain") strainZ=0;
+    if (ptype=="plane stress") strainZ=(-v/E)*(Sigma(0)+Sigma(1));
 
     strain_ave=0.5*(Ep(0)+Ep(1));
-    R=sqrt(pow(0.5*(Ep(0)-Ep(1),2.0))+Ep(2));
+    R=pow(pow(0.5*(Ep(0)-Ep(1)),2)+pow(Ep(2),2),0.5);
 
     PStrain(0)=strain_ave+R;
     PStrain(1)=strain_ave-R;

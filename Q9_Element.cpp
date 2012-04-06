@@ -1,19 +1,23 @@
 #include "Q9_Element.h"
+using namespace std;
+using namespace Eigen;
 
 Q9_Element::Q9_Element()
 {
     //ctor
 }
-Q9_Element::Q9_Element(int i,vector <Node> obj,double prop[])
+Q9_Element::Q9_Element(int i,double thi,vector <Node> obj)
 {
     SetId(i);
+    Setth(thi);
     SetNodalObj(obj);
-    SetElemParam(prop);
 }
 int SignFunction(double d)
 {
-    if or(d<0,d==0) return 1;
-    if (d<0) return -1;
+    int res;
+    if ((d<0)||(d==0)) res= 1;
+    if (d<0) res=-1;
+    return res;
 }
 void Q9_Element::SetId(int i)
 {
@@ -22,6 +26,33 @@ void Q9_Element::SetId(int i)
 int Q9_Element::GetId(void)
 {
     return id;
+}
+void Q9_Element::Setth(double t)
+{
+    th=t;
+}
+double Q9_Element::Getth(void)
+{
+    return th;
+}
+void Q9_Element::SetGama(double g)
+{
+    gama=g;
+}
+double Q9_Element::GetGama(void)
+{
+    return gama;
+}
+void Q9_Element::SetMat(ElasticMaterial m)
+{
+    mat=m;
+    E=mat.GetE();
+    v=mat.Getv();
+    gama=mat.GetGama();
+}
+ElasticMaterial Q9_Element::GetMat(void)
+{
+    return mat;
 }
 void Q9_Element::SetNodalObj(vector <Node> obj)
 {
@@ -36,24 +67,27 @@ void Q9_Element::SetElemParam(double prop[])
 }
 double Q9_Element::Calc_ShapeFunction(int kesi_node,int eta_node,double kesi,double eta)
 {
-    if (kesi_node==-1) {double term1=kesi*(kesi-1)};
-    if (kesi_node==0)  {double term1=(kesi-1)*(kesi+1)};
-    if (kesi_node==1)  {double term1=kesi*(kesi+1)};
+    double term1,term2;
 
-    if (eta_node==-1)  {double term2=eta*(eta-1)};
-    if (eta_node==0)   {double term2=(eta+1)*(eta-1)};
-    if (eta_node==1)   {double term2=(eta+1)*(eta)};
+    if (kesi_node==-1) term1=kesi*(kesi-1);
+    if (kesi_node==0)  term1=(kesi-1)*(kesi+1);
+    if (kesi_node==1)  term1=kesi*(kesi+1);
+
+    if (eta_node==-1)  term2=eta*(eta-1);
+    if (eta_node==0)   term2=(eta+1)*(eta-1);
+    if (eta_node==1)   term2=(eta+1)*(eta);
 
     return SignFunction(kesi_node)*SignFunction(eta_node)*(1/pow(2,abs(kesi_node)+abs(eta_node)))*term1*term2;
 }
 double Q9_Element::Calc_DiffN(int kesi_node,int eta_node,double kesi,double eta,string str)
 {
-    if and(str=="kesi",kesi_node==-1) double term= (2*kesi-1)*(eta_node==-1?eta*(eta-1):1)*(eta_node==0?(eta+1)*(eta-1):1)*(eta_node==1?(eta+1)*(eta):1);
-    if and(str=="kesi",kesi_node==0)  double term= (2*kesi)*(eta_node==-1?eta*(eta-1):1)*(eta_node==0?(eta+1)*(eta-1):1)*(eta_node==1?(eta+1)*(eta):1);
-    if and(str=="kesi",kesi_node==1)  double term= (2*kesi+1)*(eta_node==-1?eta*(eta-1):1)*(eta_node==0?(eta+1)*(eta-1):1)*(eta_node==1?(eta+1)*(eta):1);
-    if and(str=="eta",eta_node==-1)   double term= (2*eta-1)*(kesi_node==-1?kesi*(kesi-1):1)*(kesi_node==0?(kesi+1)*(kesi-1):1)*(kesi_node==1?(kesi+1)*(kesi):1);
-    if and(str=="eta",eta_node==0)    double term= (2*eta)*(kesi_node==-1?kesi*(kesi-1):1)*(kesi_node==0?(kesi+1)*(kesi-1):1)*(kesi_node==1?(kesi+1)*(kesi):1);
-    if and(str=="eta",eta_node==1)    double term= (2*eta+1)*(kesi_node==-1?kesi*(kesi-1):1)*(kesi_node==0?(kesi+1)*(kesi-1):1)*(kesi_node==1?(kesi+1)*(kesi):1);
+    double term;
+    if ((str=="kesi")&&(kesi_node==-1)) term= (2*kesi-1)*(eta_node==-1?eta*(eta-1):1)*(eta_node==0?(eta+1)*(eta-1):1)*(eta_node==1?(eta+1)*(eta):1);
+    if ((str=="kesi")&&(kesi_node==0))  term= (2*kesi)*(eta_node==-1?eta*(eta-1):1)*(eta_node==0?(eta+1)*(eta-1):1)*(eta_node==1?(eta+1)*(eta):1);
+    if ((str=="kesi")&&(kesi_node==1))  term= (2*kesi+1)*(eta_node==-1?eta*(eta-1):1)*(eta_node==0?(eta+1)*(eta-1):1)*(eta_node==1?(eta+1)*(eta):1);
+    if ((str=="eta")&&(eta_node==-1))   term= (2*eta-1)*(kesi_node==-1?kesi*(kesi-1):1)*(kesi_node==0?(kesi+1)*(kesi-1):1)*(kesi_node==1?(kesi+1)*(kesi):1);
+    if ((str=="eta")&&(eta_node==0))    term= (2*eta)*(kesi_node==-1?kesi*(kesi-1):1)*(kesi_node==0?(kesi+1)*(kesi-1):1)*(kesi_node==1?(kesi+1)*(kesi):1);
+    if ((str=="eta")&&(eta_node==1))    term= (2*eta+1)*(kesi_node==-1?kesi*(kesi-1):1)*(kesi_node==0?(kesi+1)*(kesi-1):1)*(kesi_node==1?(kesi+1)*(kesi):1);
 
     return SignFunction(kesi_node)*SignFunction(eta_node)*(1/pow(2,abs(kesi_node)+abs(eta_node)))*term;
 }
@@ -84,21 +118,19 @@ void Q9_Element::SetDMatrix(string str)
     }
     if (str=="pstress")
     {
-        D(0,0)=(E/(1-pow(v,2.0)));
-        D(0,1)=E/(1-pow(v,2.0)))*v;
+        D(0,0)=E/(1-pow(v,2.0));
+        D(0,1)=E*v/(1-pow(v,2.0));
         D(1,0)=D(0,1);
         D(1,1)=D(0,0);
         D(2,2)=E/(1+v);
     }
-    return D;
 }
 void Q9_Element::Calc_LSM()
 {
     LSM=wgpt[0]*(Calc_BMatrix(gpt[0],gpt[0]).transpose()*D*Calc_BMatrix(gpt[0],gpt[0])+Calc_BMatrix(gpt[1],gpt[0]).transpose()*D*Calc_BMatrix(gpt[1],gpt[0])+Calc_BMatrix(gpt[2],gpt[0]).transpose()*D*Calc_BMatrix(gpt[2],gpt[0]));
-    LSM+=wgpt[1]*((Calc_BMatrix(gpt[0],gpt[1]).transpose()*D*Calc_BMatrix(gpt[0],gpt[1])+Calc_BMatrix(gpt[1],gpt[1]).transpose()*D*Calc_BMatrix(gpt[1],gpt[1])+Calc_BMatrix(gpt[2],gpt[1]).transpose()*D*Calc_BMatrix(gpt[2],gpt[1]));
-    LSM+=wgpt[2]*(Calc_BMatrix(gpt[0],gpt[2]).transpose()*D*Calc_BMatrix(gpt[0],gpt[2])+Calc_BMatrix(gpt[1],gpt[2]).transpose()*D*Calc_BMatrix(gpt[1],gpt[2])+Calc_BMatrix(gpt[2],gpt[2]).transpose()*D*Calc_BMatrix(gpt[2],gpt[2]));
+    LSM=LSM+wgpt[1]*(Calc_BMatrix(gpt[0],gpt[1]).transpose()*D*Calc_BMatrix(gpt[0],gpt[1])+Calc_BMatrix(gpt[1],gpt[1]).transpose()*D*Calc_BMatrix(gpt[1],gpt[1])+Calc_BMatrix(gpt[2],gpt[1]).transpose()*D*Calc_BMatrix(gpt[2],gpt[1]));
+    LSM=LSM+wgpt[2]*(Calc_BMatrix(gpt[0],gpt[2]).transpose()*D*Calc_BMatrix(gpt[0],gpt[2])+Calc_BMatrix(gpt[1],gpt[2]).transpose()*D*Calc_BMatrix(gpt[1],gpt[2])+Calc_BMatrix(gpt[2],gpt[2]).transpose()*D*Calc_BMatrix(gpt[2],gpt[2]));
     LSM=th*LSM;
-    return LSM;
 }
 MatrixXd Q9_Element::Get_LSM()
 {

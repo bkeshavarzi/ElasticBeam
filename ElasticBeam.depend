@@ -1,4 +1,77 @@
 # depslib dependency file v1.0
-1590703509 source:c:\users\behroozkeshavarzi\documents\beam\elasticbeam\main.cpp
+1333737969 source:c:\users\behroozkeshavarzi\documents\beam\elasticbeam\main.cpp
 	<iostream>
+	<vector>
+	<Eigen/Dense>
+	"Node.h"
+	"CSE_Element.h"
+	"Q4_Element.h"
+	"Q8_Element.h"
+	"Q9_Element.h"
+	"TextFiles.h"
+
+1333578094 source:c:\users\behroozkeshavarzi\documents\beam\elasticbeam\elasticmaterial.cpp
+	"ElasticMaterial.h"
+
+1333578100 c:\users\behroozkeshavarzi\documents\beam\elasticbeam\elasticmaterial.h
+
+1333737995 source:c:\users\behroozkeshavarzi\documents\beam\elasticbeam\cse_element.cpp
+	"CSE_Element.h"
+
+1333696172 c:\users\behroozkeshavarzi\documents\beam\elasticbeam\cse_element.h
+	<iostream>
+	"Node.h"
+	"ElasticMaterial.h"
+	<Eigen/Dense>
+	<cmath>
+	<string>
+
+1591014520 c:\users\behroozkeshavarzi\documents\beam\elasticbeam\node.h
+	<iostream>
+	<vector>
+
+1333698013 source:c:\users\behroozkeshavarzi\documents\beam\elasticbeam\q8_element.cpp
+	"Q8_Element.h"
+
+1333698038 c:\users\behroozkeshavarzi\documents\beam\elasticbeam\q8_element.h
+	"Q4_Element.h"
+	"Q9_Element.h"
+
+1333656979 c:\users\behroozkeshavarzi\documents\beam\elasticbeam\q4_element.h
+	<vector>
+	<string>
+	"Node.h"
+	"ElasticMaterial.h"
+	<cmath>
+	<Eigen/Dense>
+	<iostream>
+
+1333698516 c:\users\behroozkeshavarzi\documents\beam\elasticbeam\q9_element.h
+	<iostream>
+	<Eigen/Dense>
+	"ElasticMaterial.h"
+	<vector>
+	<string>
+	"Node.h"
+	<cmath>
+
+1333698798 source:c:\users\behroozkeshavarzi\documents\beam\elasticbeam\q9_element.cpp
+	"Q9_Element.h"
+
+1333699563 source:c:\users\behroozkeshavarzi\documents\beam\elasticbeam\readtextfile.cpp
+	"TextFiles.h"
+
+1333698394 c:\users\behroozkeshavarzi\documents\beam\elasticbeam\textfiles.h
+	<iostream>
+	<vector>
+	<fstream>
+	<Eigen/Dense>
+	"Node.h"
+	"CSE_Element.h"
+	"Q4_Element.h"
+	"Q9_Element.h"
+	"Q8_Element.h"
+
+1333697143 source:c:\users\behroozkeshavarzi\documents\beam\elasticbeam\q4_element.cpp
+	"Q4_Element.h"
 

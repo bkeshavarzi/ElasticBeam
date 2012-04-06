@@ -44,6 +44,8 @@
 		<Unit filename="Q8_Element.h" />
 		<Unit filename="Q9_Element.cpp" />
 		<Unit filename="Q9_Element.h" />
+		<Unit filename="ReadTextFile.cpp" />
+		<Unit filename="TextFiles.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

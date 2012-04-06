@@ -1,22 +1,34 @@
 #ifndef Q9_ELEMENT_H
 #define Q9_ELEMENT_H
+#include <iostream>
+#include <Eigen/Dense>
+#include "ElasticMaterial.h"
 #include <vector>
 #include <string>
 #include "Node.h"
 #include <cmath>
 
+using namespace std;
+using namespace Eigen;
+
 class Q9_Element
 {
     public:
         Q9_Element();
-        Q9_Element(int,vector <Node>,double []);
+        Q9_Element(int,double,vector <Node>);
         void SetId(int);
         int GetId(void);
+        void Setth(double);
+        double Getth(void);
+        void SetGama(double);
+        double GetGama(void);
+        void SetMat(ElasticMaterial);
+        ElasticMaterial GetMat(void);
         void SetNodalObj(vector <Node>);
         void SetElemParam(double []);
-        double Calc_ShapeFunction(double,double);
-        double Calc_DiffN(double,double,string);
-        MatrixXd Calc_BMatrix();
+        double Calc_ShapeFunction(int,int,double,double);
+        double Calc_DiffN(int,int,double,double,string);
+        MatrixXd Calc_BMatrix(double,double);
         void SetDMatrix(string);
         void Calc_LSM();
         MatrixXd Get_LSM();
@@ -36,7 +48,7 @@ class Q9_Element
         vector <Node> NodeObj;
         ElasticMaterial mat;
         double E,v,gama,th;
-        double gpt [3]={-1*sqrt(0.6),0,sqrt(0.6)}
+        double gpt [3]={-1*sqrt(0.6),0,sqrt(0.6)};
         double wgpt[3]={5/9,8/9,5/9};
         MatrixXd LSM=MatrixXd::Zero(18,18);
         MatrixXd B=MatrixXd::Zero(3,18);

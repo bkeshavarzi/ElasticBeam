@@ -2,9 +2,11 @@
 
 ElasticMaterial::ElasticMaterial()
 {
-    //ctor
+    SetE(2e9);
+    Setv(0.35);
+    SetGama(8050);
 }
-ElasticMaterial(double Ev,double vv,double g)
+ElasticMaterial::ElasticMaterial(double Ev,double vv,double g)
 {
     SetE(Ev);
     Setv(vv);

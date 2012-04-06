@@ -3,21 +3,32 @@
 #include <vector>
 #include <string>
 #include "Node.h"
+#include "ElasticMaterial.h"
 #include <cmath>
+#include <Eigen/Dense>
+#include <iostream>
+
+using namespace std;
+using namespace Eigen;
 
 class Q4_Element
 {
     public:
 
         Q4_Element();
-        Q4_Element(int,vector <Node>,double []);
+        Q4_Element(int,double,double,vector <Node>);
         void SetId(int);
         int GetId(void);
+        void Setth(double);
+        double Getth(void);
+        void SetGama(double);
+        double GetGama(void);
+        void SetMat(ElasticMaterial);
+        ElasticMaterial GetMat(void);
         void SetNodalObj(vector <Node>);
-        void SetElemParam(double []);
-        double Calc_ShapeFunction(double,double);
-        double Calc_DiffN(double,double,string);
-        MatrixXd Calc_BMatrix();
+        double Calc_ShapeFunction(int,int,double,double);
+        double Calc_DiffN(int,int,double,double,string);
+        MatrixXd Calc_BMatrix(double,double);
         void SetDMatrix(string);
         void Calc_LSM();
         MatrixXd Get_LSM();
@@ -37,7 +48,7 @@ class Q4_Element
         vector <Node> NodeObj;
         ElasticMaterial mat;
         double E,v,gama,th;
-        double gpt [2]={-1/sqrt(3),1/sqrt(3)}
+        double gpt [2]={-1/sqrt(3),1/sqrt(3)};
         double wgpt[2]={1,1};
         MatrixXd LSM=MatrixXd::Zero(8,8);
         MatrixXd B=MatrixXd::Zero(3,8);
