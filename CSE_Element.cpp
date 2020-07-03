@@ -2,10 +2,7 @@
 
 CSE_Element::CSE_Element()
 {
-    //vector <Node> ObjNode=CSE_Element_v[0].GetNodeObj();
-    //CSE_Element obj(1,0.02,ObjNode,mat);
-    //obj.SetDMatrix_PlaneStress();
-    //obj.SetLSM();
+
 }
 CSE_Element::CSE_Element(int i,double thi,vector <Node> obj,ElasticMaterial m)
 {
@@ -13,9 +10,6 @@ CSE_Element::CSE_Element(int i,double thi,vector <Node> obj,ElasticMaterial m)
     Setth(thi);
     SetNodeObj(obj[0],obj[1],obj[2]);
     SetMat(m);
-    SetCMatrix();
-    SetA();
-    SetBMatrix();
 }
 void CSE_Element::SetId(int i)
 {
@@ -62,46 +56,47 @@ vector <Node> CSE_Element::GetNodeObj(void)
 {
     return NodeObj;
 }
-void CSE_Element::SetDof()
+void CSE_Element::SetLocalCord()
 {
-    *ldof=2*(NodeObj[0].GetId()-1);
-    *(ldof+1)=2*(NodeObj[0].GetId()-1)+1;
-    *(ldof+2)=2*(NodeObj[1].GetId()-1);
-    *(ldof+3)=2*(NodeObj[1].GetId()-1)+1;
-    *(ldof+4)=2*(NodeObj[2].GetId()-1);
-    *(ldof+5)=2*(NodeObj[2].GetId()-1)+1;
+    vector <double> Cord;
+    for (int inode=0;inode<3;inode++)
+    {
+        Cord=NodeObj[inode].GetCord();
+        LCord(0,inode)=Cord[0];
+        LCord(1,inode)=Cord[1];
+    }
 }
-void CSE_Element::SetCMatrix()
+MatrixXd CSE_Element::GetLocalCord(void)
+{
+    return LCord;
+}
+MatrixXd CSE_Element::SetCMatrix()
 {
     vector <double> Temp_Cord;
+    MatrixXd C=MatrixXd::Zero(3,3);
     Temp_Cord=NodeObj[0].GetCord();
     C(0,0)=1;C(0,1)=Temp_Cord[0];C(0,2)=Temp_Cord[1];
     Temp_Cord=NodeObj[1].GetCord();
     C(1,0)=1;C(1,1)=Temp_Cord[0];C(1,2)=Temp_Cord[1];
     Temp_Cord=NodeObj[2].GetCord();
     C(2,0)=1;C(2,1)=Temp_Cord[0];C(2,2)=Temp_Cord[1];
-}
-MatrixXd CSE_Element::GetCMatrix()
-{
     return C;
 }
 void CSE_Element::SetA()
 {
-    A=0.5*(C.determinant());
+    A=0.5*(SetCMatrix().determinant());
 }
 double CSE_Element::GetA()
 {
     return A;
 }
-void CSE_Element::SetBMatrix()
+MatrixXd CSE_Element::SetBMatrix()
 {
-    MatrixXd Cinv=C.inverse();
+    MatrixXd Cinv=SetCMatrix().inverse();
+    MatrixXd B=MatrixXd::Zero(3,6);
     B(0,0)=Cinv(1,0);B(1,1)=Cinv(2,0);B(2,0)=Cinv(2,0);B(2,1)=Cinv(1,0);
     B(0,2)=Cinv(1,1);B(1,3)=Cinv(2,1);B(2,2)=Cinv(2,1);B(2,3)=Cinv(1,1);
     B(0,4)=Cinv(1,2);B(1,5)=Cinv(2,2);B(2,4)=Cinv(2,2);B(2,5)=Cinv(1,2);
-}
-MatrixXd CSE_Element::GetBMatrix(void)
-{
     return B;
 }
 void CSE_Element::SetDMatrix_PlaneStress()
@@ -121,47 +116,27 @@ void CSE_Element::SetDMatrix_PlaneStrain()
     D(1,1)=D(0,0);
     D(2,2)=factor*(1-2*v);
 }
-MatrixXd CSE_Element::GetDMatrix()
+MatrixXd CSE_Element::SetLSM()
 {
-    return D;
-}
-void CSE_Element::SetFECalc(string str)
-{
-    SetCMatrix();
     SetA();
-    SetBMatrix();
-    if (str=="planestrain") SetDMatrix_PlaneStrain();
-    if (str=="planestress") SetDMatrix_PlaneStress();
-}
-void CSE_Element::SetLSM()
-{
-    LSM=B.transpose()*D*B*th*A;
-}
-MatrixXd CSE_Element::GetLSM()
-{
+    LSM=(SetBMatrix().transpose())*D*SetBMatrix()*th*A;
     return LSM;
 }
 void CSE_Element::SetU(MatrixXd Ue)
 {
     U=Ue;
 }
-void CSE_Element::CalculateStrainTensor()
+MatrixXd CSE_Element::CalculateStrainTensor()
 {
     Ep=B*U;
-}
-MatrixXd CSE_Element::GetStrainTensor()
-{
     return Ep;
 }
-void CSE_Element::CalculateStressTensor()
+MatrixXd CSE_Element::CalculateStressTensor()
 {
     Sigma=D*Ep;
-}
-MatrixXd CSE_Element::GetStressTensor()
-{
     return Sigma;
 }
-void CSE_Element::CalculatePrinStress(string ptype)
+MatrixXd CSE_Element::CalculatePrinStress(string ptype)
 {
     double sigma_ave,R,sigmaZ;
 
@@ -174,12 +149,10 @@ void CSE_Element::CalculatePrinStress(string ptype)
     PSigma(0)=sigma_ave-R;
     PSigma(1)=sigma_ave+R;
     PSigma(2)=sigmaZ;
-}
-MatrixXd CSE_Element::GetPrinStress()
-{
+
     return PSigma;
 }
-void CSE_Element::CalculatePrinStrain(string ptype)
+MatrixXd CSE_Element::CalculatePrinStrain(string ptype)
 {
     double strain_ave,R,strainZ;
 
@@ -193,10 +166,8 @@ void CSE_Element::CalculatePrinStrain(string ptype)
     PStrain(1)=strain_ave-R;
     PStrain(2)=strainZ;
 
-}
-MatrixXd CSE_Element::GetPrinStrain()
-{
     return PStrain;
+
 }
 CSE_Element::~CSE_Element()
 {

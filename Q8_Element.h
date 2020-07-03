@@ -25,6 +25,10 @@ class Q8_Element : public Q4_Element,Q9_Element
         double Calc_DiffN(int,int,double,double,string);
         MatrixXd Calc_BMatrix(double,double);
         void SetDMatrix(string);
+        void SetLocalCord(void);
+        MatrixXd CalcJacobian(double,double);
+        MatrixXd CalcInvJacobian(double,double);
+        double CalcDetJacobian(double,double);
         void Calc_LSM();
         MatrixXd Get_LSM();
         void SetU(MatrixXd);
@@ -42,11 +46,11 @@ class Q8_Element : public Q4_Element,Q9_Element
         int id;
         vector <Node> NodeObj;
         ElasticMaterial mat;
-        double E,v,gama,th;
+        double E,v,gama,th,a,b,xc,yc,detJ;
         double gpt [3]={-1*sqrt(0.6),0,sqrt(0.6)};
         double wgpt[3]={5/9,8/9,5/9};
+        MatrixXd LCord=MatrixXd::Zero(2,8);
         MatrixXd LSM=MatrixXd::Zero(16,16);
-        MatrixXd B=MatrixXd::Zero(3,18);
         MatrixXd D=MatrixXd::Zero(3,3);
         MatrixXd U=MatrixXd::Zero(16,1);
         MatrixXd Ep=MatrixXd::Zero(3,8);

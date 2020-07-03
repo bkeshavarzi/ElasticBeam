@@ -33,6 +33,9 @@ class Q4_Element
         void SetDMatrix(string);
         void Setlocalcord(void);
         MatrixXd Getlocalcord();
+        void CalcJacobian(double,double);
+        void CalcInvJacobian();
+        void CalcDetJacobian(double,double);
         void Calc_LSM();
         MatrixXd Get_LSM();
         void SetU(MatrixXd);
@@ -50,10 +53,11 @@ class Q4_Element
         int id;
         vector <Node> NodeObj;
         ElasticMaterial mat;
-        double E,v,gama,th,a,b;
+        double E,v,gama,th,a,b,detJ;
         double gpt [2]={-1/sqrt(3),1/sqrt(3)};
         double wgpt[2]={1,1};
         MatrixXd localcord=MatrixXd::Zero(2,4);
+        MatrixXd J,IJ=MatrixXd::Zero(2,2);
         MatrixXd LSM=MatrixXd::Zero(8,8);
         MatrixXd B=MatrixXd::Zero(3,8);
         MatrixXd D=MatrixXd::Zero(3,3);

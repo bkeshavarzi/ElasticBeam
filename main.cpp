@@ -13,13 +13,15 @@ using namespace Eigen;
 
 //Make node class...Done
 //Mesh structures...DONE
-//Make element class(Q4...DONE, Q8..., Q9...DONE, CSE...DONE)...DONE
+//Make element class(Q4...DONE, Q8...DONE, Q9...DONE, CSE...DONE)...DONE
 //Read node file...DONE
 //Read element file...DONE
+//A code in Python to show mesh and results in contour mode, try to link it with C++
 //Make stiffness matrix
 //Make force vector
 //Make free dof vector
-//Calculate displcement vector
+//Think about node load
+//Calculate displacement vector
 //Calculate stress for each element
 //Calculate prin. stress for each stress
 

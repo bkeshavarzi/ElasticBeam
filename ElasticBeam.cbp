@@ -36,6 +36,8 @@
 		<Unit filename="CSE_Element.h" />
 		<Unit filename="ElasticMaterial.cpp" />
 		<Unit filename="ElasticMaterial.h" />
+		<Unit filename="FECalc.cpp" />
+		<Unit filename="FEProp.h" />
 		<Unit filename="Node.cpp" />
 		<Unit filename="Node.h" />
 		<Unit filename="Q4_Element.cpp" />
@@ -48,9 +50,6 @@
 		<Unit filename="TextFiles.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
 			<lib_finder disable_auto="1" />
 		</Extensions>
 	</Project>
