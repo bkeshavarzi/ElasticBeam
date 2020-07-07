@@ -61,22 +61,35 @@ double Q4_Element::Calc_ShapeFunction(int kesi_node,int eta_node,double kesi,dou
 {
     return 0.25*(1+kesi_node*kesi)*(1+eta_node*eta);
 }
-void Q4_Element::CalcJacobian(double kesi,double eta)
+MatrixXd Q4_Element::CalcJacobian(double kesi,double eta)
 {
-    J(0,0)=localcord(0,0)*Calc_DiffN(-1,-1,kesi,eta,"kesi")+localcord(0,1)*Calc_DiffN(1,-1,kesi,eta,"kesi")+localcord(0,2)*Calc_DiffN(1,1,kesi,eta,"kesi")+localcord(0,3)*Calc_DiffN(-1,1,kesi,eta,"kesi");
-    J(0,1)=localcord(1,0)*Calc_DiffN(-1,-1,kesi,eta,"kesi")+localcord(1,1)*Calc_DiffN(1,-1,kesi,eta,"kesi")+localcord(1,2)*Calc_DiffN(1,1,kesi,eta,"kesi")+localcord(1,3)*Calc_DiffN(-1,1,kesi,eta,"kesi");
-    J(1,0)=localcord(0,0)*Calc_DiffN(-1,-1,kesi,eta,"eta")+localcord(0,1)*Calc_DiffN(1,-1,kesi,eta,"eta")+localcord(0,2)*Calc_DiffN(1,1,kesi,eta,"eta")+localcord(0,3)*Calc_DiffN(-1,1,kesi,eta,"eta");
-    J(1,1)=localcord(1,0)*Calc_DiffN(-1,-1,kesi,eta,"eta")+localcord(1,1)*Calc_DiffN(1,-1,kesi,eta,"eta")+localcord(1,2)*Calc_DiffN(1,1,kesi,eta,"eta")+localcord(1,3)*Calc_DiffN(-1,1,kesi,eta,"eta");
+    MatrixXd J=MatrixXd::Zero(2,2);
+    int kesi_node,eta_node;
+
+    for (int inode=0;inode<4;inode++)
+    {
+        kesi_node=(LCord(0,inode)-xc)/a;
+        eta_node=(LCord(1,inode)-yc)/b;
+        J(0,0)+=LCord(0,inode)*Calc_DiffN(kesi_node,eta_node,kesi,eta,"kesi");
+        J(0,1)+=LCord(1,inode)*Calc_DiffN(kesi_node,eta_node,kesi,eta,"kesi");
+        J(1,0)+=LCord(0,inode)*Calc_DiffN(kesi_node,eta_node,kesi,eta,"eta");
+        J(1,1)+=LCord(1,inode)*Calc_DiffN(kesi_node,eta_node,kesi,eta,"eta");
+    }
+    return J;
 }
-void Q4_Element::CalcInvJacobian(double kesi,double eta)
+MatrixXd Q4_Element::CalcInvJacobian(double kesi,double eta)
 {
-    CalcJacobian(double kesi,double eta);
+    MatrixXd I,IJ=MatrixXd::Zero(2,2);
+    J=CalcJacobian(double kesi,double eta);
     IJ=J.inverse();
+    return IJ;
 }
-void Q4_Element::CalcDetJacobian(double kesi,double eta)
+double Q4_Element::CalcDetJacobian(double kesi,double eta)
 {
-    CalcJacobian(double kesi,double eta);
-    detJ=J.determinant();
+    MatrixXd J=MatrixXd::Zero(2,2);
+    J=CalcJacobian(double kesi,double eta);
+    double detJ=J.determinant();
+    return detJ;
 }
 double Q4_Element::Calc_DiffN(int kesi_node,int eta_node,double kesi,double eta,string str)
 {
@@ -85,19 +98,19 @@ double Q4_Element::Calc_DiffN(int kesi_node,int eta_node,double kesi,double eta,
 }
 MatrixXd Q4_Element::Calc_BMatrix(double x_gpt,double y_gpt)
 {
-    CalcInvJacobian(x_gpt,y_gpt);
-    B(0,0)=IJ(0,0)*Calc_DiffN(-1,-1,x_gpt,y_gpt,"kesi")+IJ(0,1)*Calc_DiffN(-1,-1,x_gpt,y_gpt,"eta");
-    B(1,1)=IJ(1,0)*Calc_DiffN(-1,-1,x_gpt,y_gpt,"kesi")+IJ(1,1)*Calc_DiffN(-1,-1,x_gpt,y_gpt,"eta");
-    B(2,0)=B(1,1);B(2,1)=B(0,0);
-    B(0,2)=IJ(0,0)*Calc_DiffN(1,-1,x_gpt,y_gpt,"kesi")+IJ(0,1)*Calc_DiffN(1,-1,x_gpt,y_gpt,"eta");
-    B(1,3)=IJ(1,0)*Calc_DiffN(1,-1,x_gpt,y_gpt,"kesi")+IJ(1,1)*Calc_DiffN(1,-1,x_gpt,y_gpt,"eta");
-    B(2,2)=B(1,3);B(2,3)=B(0,2);
-    B(0,4)=IJ(0,0)*Calc_DiffN(1,1,x_gpt,y_gpt,"kesi")+IJ(0,1)*Calc_DiffN(1,1,x_gpt,y_gpt,"eta");
-    B(1,5)=IJ(1,0)*Calc_DiffN(1,1,x_gpt,y_gpt,"kesi")+IJ(1,1)*Calc_DiffN(1,1,x_gpt,y_gpt,"eta");
-    B(2,4)=B(1,5);B(2,5)=B(0,4);
-    B(0,6)=IJ(0,0)*Calc_DiffN(-1,1,x_gpt,y_gpt,"kesi")+IJ(0,1)*Calc_DiffN(-1,1,x_gpt,y_gpt,"eta");
-    B(1,7)=IJ(1,0)*Calc_DiffN(-1,1,x_gpt,y_gpt,"kesi")+IJ(1,1)*Calc_DiffN(-1,1,x_gpt,y_gpt,"eta");
-    B(2,6)=B(1,7);B(2,7)=B(0,6);
+    MatrixXd IJ=CalcInvJacobian(x_gpt,y_gpt);
+    int kesi_node,eta_node;
+    MatrixXd B=MatrixXd::Zero(3,8);
+
+    for (int inode=0;inode<4;inode++)
+    {
+        kesi_node=(LCord(0,ionde)-xc)/a;
+        eta_node=(LCord(1,ionde)-yc)/b;
+        B(0,2*inode)=IJ(0,0)*Calc_DiffN(kesi_node,eta_node,x_gpt,y_gpt,"kesi")+IJ(0,1)*Calc_DiffN(kesi_node,eta_node,x_gpt,y_gpt,"eta");
+        B(1,2*inode+1)=IJ(1,0)*Calc_DiffN(kesi_node,eta_node,x_gpt,y_gpt,"kesi")+IJ(1,1)*Calc_DiffN(kesi_node,eta_node,x_gpt,y_gpt,"eta");
+        B(2,2*inode)=B(1,2*inode+1);
+        B(2,2*inode+1)=B(0,2*inode);
+    }
     return B;
 }
 void Q4_Element::SetDMatrix(string str)
@@ -124,51 +137,31 @@ void Q4_Element::SetDMatrix(string str)
 void Q4_Element::Setlocalcord(void)
 {
     vector <double> cord;
-    double xmin,xmax,ymin,ymax,xsum,ysum;
-    cord=NodeObj[0].GetCord();
-    xmin=cord[0];xmax=cord[0];ymin=cord[1];ymax=cord[1];xsum=cord[0];ysum=cord[1];
-    localcord(0,0)=cord[0];localcord(1,0)=cord[1];
 
-    for (int inode=1;inode<4;inode++)
+    for (int inode=0;inode<4;inode++)
     {
         cord=NodeObj[inode].GetCord();
-        xmin=(xmin>cord[0]?cord[0]:xmin);
-        xmax=(xmax>cord[0]?xmax:cord[0]);
-        ymin=(ymin>cord[1]?cord[1]:ymin);
-        ymax=(ymax>cord[1]?ymax:cord[1]);
-        xsum+=cord[0];
-        ysum+=cord[1];
+        LCord(0,inode)=cord[0];
+        LCord(1,inode)=cord[1];
     }
-    a=0.5*(xmax-xmin);
-    b=0.5*(ymax-ymin);
-    xsum=xsum/4;
-    ysum=ysum/4;
-    localcord.block(0,0,1,4)=(((localcord.block(0,0,1,4)).array()-xsum)/a).matrix();
-    localcord.block(1,0,1,4)=(((localcord.block(1,0,1,4)).array()-ysum)/b).matrix();
-}
-MatrixXd Q4_Element::Getlocalcord()
-{
-    return localcord;
+    a=0.5*(LCord.block(0,0,1,4).maxCoeff()-LCord.block(0,0,1,4).minCoeff());
+    b=0.5*(LCord.block(1,0,1,4).maxCoeff()-LCord.block(1,0,1,4).minCoeff());
+    xc=(LCord.block(0,0,1,4).sum())/4;
+    yc=(LCord.block(0,1,1,4).sum())/4;
 }
 void Q4_Element::Calc_LSM()
 {
-    MatrixXd TempB=MatrixXd::Zero(3,8);
-    TempB=Calc_BMatrix(gpt[0],gpt[0]);
-    CalcDetJacobian(gpt[0],gpt[0]);
-    LSM=gpt[0]*(TempB.transpose())*D*TempB*detJ;
-
-    TempB=Calc_BMatrix(gpt[1],gpt[0]);
-    CalcDetJacobian(gpt[1],gpt[0]);
-    LSM+=gpt[1]*(TempB.transpose())*D*TempB*detJ;
-
-    TempB=Calc_BMatrix(gpt[1],gpt[1]);
-    CalcDetJacobian(gpt[1],gpt[1]);
-    LSM+=gpt[1]*(TempB.transpose())*D*TempB*detJ;
-
-    TempB=Calc_BMatrix(gpt[0],gpt[1]);
-    CalcDetJacobian(gpt[0],gpt[1]);
-    LSM+=gpt[0]*(TempB.transpose())*D*TempB;
-
+    double detJ;
+    MatrixXd B=MatrixXd::Zero(3,8);
+    for (int igpt=0;igpt <2;igpt++)
+    {
+        for (int jgpt=0;jgpt<2;jgpt++)
+        {
+            B=Calc_BMatrix(gpt[igpt],gpt[jgpt]);
+            detJ=CalcDetJacobian(gpt[igpt],gpt[jgpt]);
+            LSM+=detJ*(B.transpose())*D*B;
+        }
+    }
     LSM=((LSM.array())*th).matrix();
 }
 MatrixXd Q4_Element::Get_LSM()
