@@ -102,13 +102,13 @@ MatrixXd Q9_Element::Calc_BMatrix(double x_gpt,double y_gpt)
 {
 
     MatrixXd B=MatrixXd::Zero(3,18);
-    MatrixXd IJ=MatrixXd::Zeros(2,2);
+    MatrixXd IJ=MatrixXd::Zero(2,2);
     double kesi,eta;
 
     for (int inode=0;inode<9;inode++)
     {
         kesi=(LCord(0,inode)-xc)/a;
-        eta=(LCord(1,inode)-yc)/b);
+        eta=(LCord(1,inode)-yc)/b;
         IJ=CalcInvJacobian(x_gpt,y_gpt);
         B(0,2*inode)=IJ(0,0)*Calc_DiffN(kesi,eta,x_gpt,y_gpt,"kesi")+IJ(0,1)*Calc_DiffN(kesi,eta,x_gpt,y_gpt,"eta");
         B(1,2*inode+1)=IJ(1,0)*Calc_DiffN(kesi,eta,x_gpt,y_gpt,"kesi")+IJ(1,1)*Calc_DiffN(kesi,eta,x_gpt,y_gpt,"eta");
@@ -177,30 +177,31 @@ MatrixXd Q9_Element::CalcInvJacobian(double kesi,double eta)
 {
     return (CalcJacobian(kesi,eta).inverse());
 }
-double Q9_Element::CalcDetJacobian(double,double)
+double Q9_Element::CalcDetJacobian(double kesi,double eta)
 {
     return (CalcJacobian(kesi,eta).determinant());
 }
 MatrixXd Q9_Element::Getlocalcord()
 {
-    return localcord;
+    return LCord;
 }
-void Q9_Element::Calc_LSM()
+MatrixXd Q9_Element::Calc_LSM()
 {
+    MatrixXd B=MatrixXd::Zero(3,18);
+    double detJ;
+
     for (int igpt=0;igpt<3;igpt++)
     {
         for (int jpt=0;jpt<3;jpt++)
         {
-            LSM+=wgpt[igpt]*(Calc_BMatrix(gpt[igpt],gpt[jpt]).transpose())*D*Calc_BMatrix(gpt[igpt],gpt[jpt])*CalcDetJacobian(gpt[igpt],gpt[jpt]);
+            B=Calc_BMatrix(gpt[igpt],gpt[jpt]);
+            detJ=CalcDetJacobian(gpt[igpt],gpt[jpt]);
+            LSM+=wgpt[igpt]*(B.transpose())*D*B*detJ;
         }
     }
 
-    LSM=LSM*th;
+    LSM=((LSM.array())*th).matrix();
 
-}
-MatrixXd Q9_Element::Get_LSM()
-{
-    return LSM;
 }
 void Q9_Element::SetU(MatrixXd Ue)
 {

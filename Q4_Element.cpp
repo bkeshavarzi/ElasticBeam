@@ -6,7 +6,7 @@ Q4_Element::Q4_Element()
 {
     //ctor
 }
-Q4_Element::Q4_Element(int i,double thi, vector <Node> obj,ElasticMaterial mat)
+Q4_Element::Q4_Element(int i,double thi, vector <Node> obj,ElasticMaterial &mat)
 {
     SetId(i);
     Setth(thi);
@@ -38,7 +38,7 @@ double Q4_Element::GetGama(void)
 {
     return gama;
 }
-void Q4_Element::SetMat(ElasticMaterial m)
+void Q4_Element::SetMat(ElasticMaterial & m)
 {
     mat=m;
     E=mat.GetE();
@@ -79,15 +79,15 @@ MatrixXd Q4_Element::CalcJacobian(double kesi,double eta)
 }
 MatrixXd Q4_Element::CalcInvJacobian(double kesi,double eta)
 {
-    MatrixXd I,IJ=MatrixXd::Zero(2,2);
-    J=CalcJacobian(double kesi,double eta);
+    MatrixXd J,IJ=MatrixXd::Zero(2,2);
+    J=CalcJacobian(kesi,eta);
     IJ=J.inverse();
     return IJ;
 }
 double Q4_Element::CalcDetJacobian(double kesi,double eta)
 {
     MatrixXd J=MatrixXd::Zero(2,2);
-    J=CalcJacobian(double kesi,double eta);
+    J=CalcJacobian(kesi,eta);
     double detJ=J.determinant();
     return detJ;
 }
@@ -104,8 +104,8 @@ MatrixXd Q4_Element::Calc_BMatrix(double x_gpt,double y_gpt)
 
     for (int inode=0;inode<4;inode++)
     {
-        kesi_node=(LCord(0,ionde)-xc)/a;
-        eta_node=(LCord(1,ionde)-yc)/b;
+        kesi_node=(LCord(0,inode)-xc)/a;
+        eta_node=(LCord(1,inode)-yc)/b;
         B(0,2*inode)=IJ(0,0)*Calc_DiffN(kesi_node,eta_node,x_gpt,y_gpt,"kesi")+IJ(0,1)*Calc_DiffN(kesi_node,eta_node,x_gpt,y_gpt,"eta");
         B(1,2*inode+1)=IJ(1,0)*Calc_DiffN(kesi_node,eta_node,x_gpt,y_gpt,"kesi")+IJ(1,1)*Calc_DiffN(kesi_node,eta_node,x_gpt,y_gpt,"eta");
         B(2,2*inode)=B(1,2*inode+1);
@@ -149,7 +149,7 @@ void Q4_Element::Setlocalcord(void)
     xc=(LCord.block(0,0,1,4).sum())/4;
     yc=(LCord.block(0,1,1,4).sum())/4;
 }
-void Q4_Element::Calc_LSM()
+MatrixXd Q4_Element::Calc_LSM()
 {
     double detJ;
     MatrixXd B=MatrixXd::Zero(3,8);
@@ -159,13 +159,10 @@ void Q4_Element::Calc_LSM()
         {
             B=Calc_BMatrix(gpt[igpt],gpt[jgpt]);
             detJ=CalcDetJacobian(gpt[igpt],gpt[jgpt]);
-            LSM+=detJ*(B.transpose())*D*B;
+            LSM+=wgpt[jgpt]*detJ*(B.transpose())*D*B;
         }
     }
     LSM=((LSM.array())*th).matrix();
-}
-MatrixXd Q4_Element::Get_LSM()
-{
     return LSM;
 }
 void Q4_Element::SetU(MatrixXd Ue)

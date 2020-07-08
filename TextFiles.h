@@ -14,10 +14,10 @@ using namespace std;
 using namespace Eigen;
 
 vector <Node> ReadNodeFile(string);
-vector <CSE_Element> ReadCSEElement(string,ElasticMaterial,double,vector <Node>);
-vector <Q4_Element>  ReadQ4Element(string,ElasticMaterial,double,vector <Node>);
-vector <Q8_Element>  ReadQ8Element(string,ElasticMaterial,double,vector <Node>);
-vector <Q9_Element>  ReadQ9Element(string,ElasticMaterial,double,vector <Node>);
+vector <CSE_Element> ReadCSEElement(string,ElasticMaterial &,double,vector <Node>);
+vector <Q4_Element>  ReadQ4Element(string,ElasticMaterial &,double,vector <Node>);
+vector <Q8_Element>  ReadQ8Element(string,ElasticMaterial &,double,vector <Node>);
+vector <Q9_Element>  ReadQ9Element(string,ElasticMaterial &,double,vector <Node>);
 vector <Node> SortElementNodeQ4(vector <Node>);
 vector <Node> SortElementNodeQ8(vector <Node>);
 vector <Node> SortElementNodeQ9(vector <Node>);

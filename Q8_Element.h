@@ -10,14 +10,14 @@ class Q8_Element : public Q4_Element,Q9_Element
     public:
 
         Q8_Element();
-        Q8_Element(int,double,vector <Node>);
+        Q8_Element(int,double,vector <Node>,ElasticMaterial &);
         void SetId(int);
         int GetId(void);
         void Setth(double);
         double Getth(void);
         void SetGama(double);
         double GetGama(void);
-        void SetMat(ElasticMaterial);
+        void SetMat(ElasticMaterial &);
         ElasticMaterial GetMat(void);
         void SetNodalObj(vector <Node>);
         vector <Node> GetNodalObj(void);
@@ -29,8 +29,7 @@ class Q8_Element : public Q4_Element,Q9_Element
         MatrixXd CalcJacobian(double,double);
         MatrixXd CalcInvJacobian(double,double);
         double CalcDetJacobian(double,double);
-        void Calc_LSM();
-        MatrixXd Get_LSM();
+        MatrixXd Calc_LSM();
         void SetU(MatrixXd);
         MatrixXd Get_Ep();
         MatrixXd Get_Sigma();

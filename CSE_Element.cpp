@@ -4,7 +4,7 @@ CSE_Element::CSE_Element()
 {
 
 }
-CSE_Element::CSE_Element(int i,double thi,vector <Node> obj,ElasticMaterial m)
+CSE_Element::CSE_Element(int i,double thi,vector <Node> obj,ElasticMaterial & m)
 {
     SetId(i);
     Setth(thi);
@@ -35,12 +35,12 @@ double CSE_Element::GetGama(void)
 {
     return gama;
 }
-void CSE_Element::SetMat(ElasticMaterial m)
+void CSE_Element::SetMat(ElasticMaterial & m)
 {
     mat=m;
     E=m.GetE();
     v=m.Getv();
-    gama=mat.GetGama();
+    gama=m.GetGama();
 }
 ElasticMaterial CSE_Element::GetMat(void)
 {
@@ -116,7 +116,7 @@ void CSE_Element::SetDMatrix_PlaneStrain()
     D(1,1)=D(0,0);
     D(2,2)=factor*(1-2*v);
 }
-MatrixXd CSE_Element::SetLSM()
+MatrixXd CSE_Element::Calc_LSM()
 {
     SetA();
     LSM=(SetBMatrix().transpose())*D*SetBMatrix()*th*A;
@@ -128,7 +128,7 @@ void CSE_Element::SetU(MatrixXd Ue)
 }
 MatrixXd CSE_Element::CalculateStrainTensor()
 {
-    Ep=B*U;
+    Ep=SetBMatrix()*U;
     return Ep;
 }
 MatrixXd CSE_Element::CalculateStressTensor()

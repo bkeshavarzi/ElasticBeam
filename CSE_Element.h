@@ -15,7 +15,7 @@ class CSE_Element
     public:
 
         CSE_Element();
-        CSE_Element(int,double,vector <Node>,ElasticMaterial); //id,thickness,nodal objects,material
+        CSE_Element(int,double,vector <Node>,ElasticMaterial &); //id,thickness,nodal objects,material
         int ldof[6];
         void SetId(int);
         int GetId(void);
@@ -23,7 +23,7 @@ class CSE_Element
         double Getth(void);
         void SetGama(double);
         double GetGama(void);
-        void SetMat(ElasticMaterial);
+        void SetMat(ElasticMaterial &);
         ElasticMaterial GetMat(void);
         void SetNodeObj(Node,Node,Node);
         vector <Node> GetNodeObj(void);
@@ -32,12 +32,10 @@ class CSE_Element
         MatrixXd SetCMatrix();
         void SetA();
         double GetA();
-        void SetBMatrix();
-        MatrixXd GetBMatrix(void);
+        MatrixXd SetBMatrix();
         void SetDMatrix_PlaneStress();
         void SetDMatrix_PlaneStrain();
-        void SetLSM();
-        MatrixXd GetLSM();
+        MatrixXd Calc_LSM();
         void SetU(MatrixXd);
         MatrixXd CalculateStrainTensor();
         MatrixXd CalculateStressTensor();

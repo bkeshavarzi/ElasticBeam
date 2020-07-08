@@ -16,14 +16,14 @@ class Q4_Element
     public:
 
         Q4_Element();
-        Q4_Element(int,double,vector <Node>,ElasticMaterial);
+        Q4_Element(int,double,vector <Node>,ElasticMaterial &);
         void SetId(int);
         int GetId(void);
         void Setth(double);
         double Getth(void);
         void SetGama(double);
         double GetGama(void);
-        void SetMat(ElasticMaterial);
+        void SetMat(ElasticMaterial &);
         ElasticMaterial GetMat(void);
         void SetNodalObj(vector <Node>);
         vector <Node> GetNodalObj(void);
@@ -33,7 +33,7 @@ class Q4_Element
         void SetDMatrix(string);
         void Setlocalcord(void);
         MatrixXd CalcJacobian(double,double);
-        MatrixXd CalcInvJacobian();
+        MatrixXd CalcInvJacobian(double,double);
         double CalcDetJacobian(double,double);
         MatrixXd Calc_LSM();
         void SetU(MatrixXd);

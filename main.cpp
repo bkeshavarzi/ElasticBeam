@@ -27,11 +27,11 @@ using namespace Eigen;
 
 int main()
 {
-    ElasticMaterial mat(2e9,0.3,0);
-    vector <Node> NV=ReadNodeFile("Q9_Node.txt");
-    vector <Q9_Element> EV=ReadQ9Element("Q9_Element.txt",mat,0.02,NV);
-    vector <Node> nv=EV[0].GetNodalObj();
-    EV[0].Setlocalcord();
+    //ElasticMaterial mat(2e9,0.3,0);
+    //vector <Node> NV=ReadNodeFile("Q9_Node.txt");
+    //vector <Q9_Element> EV=ReadQ9Element("Q9_Element.txt",mat,0.02,NV);
+    //vector <Node> nv=EV[0].GetNodalObj();
+    //EV[0].Setlocalcord();
     //cout << EV[0].Calc_DiffN(-1,-1,-1*sqrt(0.6),-1*sqrt(0.6),"eta") << endl;
     //MatrixXd B =EV[0].Calc_BMatrix(-1*sqrt(0.6),-1*sqrt(0.6));
     //cout << B.block(0,0,3,2) <<endl;

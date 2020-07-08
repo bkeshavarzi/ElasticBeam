@@ -27,7 +27,7 @@ vector <Node> ReadNodeFile(string str)
     return NV;
 }
 
-vector <CSE_Element> ReadCSEElement(string str,ElasticMaterial mat,double thickness,vector <Node> N)
+vector <CSE_Element> ReadCSEElement(string str,ElasticMaterial & mat,double thickness,vector <Node> N)
 {
     ifstream fid;
     fid.open(str);
@@ -47,12 +47,14 @@ vector <CSE_Element> ReadCSEElement(string str,ElasticMaterial mat,double thickn
         obj.Setth(thickness);
         obj.SetNodeObj(N[n1-1],N[n2-1],N[n3-1]);
         obj.SetMat(mat);
+        obj.SetLocalCord();
+        obj.SetDMatrix_PlaneStress();
         CSEV.push_back(obj);
     }
     return CSEV;
 }
 
-vector <Q4_Element>  ReadQ4Element(string str,ElasticMaterial mat,double thickness,vector <Node> NV)
+vector <Q4_Element>  ReadQ4Element(string str,ElasticMaterial & mat,double thickness,vector <Node> NV)
 {
     ifstream fid;
     fid.open(str);
@@ -77,12 +79,13 @@ vector <Q4_Element>  ReadQ4Element(string str,ElasticMaterial mat,double thickne
         obj.SetNodalObj(NodeObj);
         obj.SetMat(mat);
         obj.Setlocalcord();
+        obj.SetDMatrix("pstress");
         Q4V.push_back(obj);
     }
     return Q4V;
 }
 
-vector <Q8_Element>  ReadQ8Element(string str,ElasticMaterial mat,double thickness,vector <Node> NV)
+vector <Q8_Element>  ReadQ8Element(string str,ElasticMaterial & mat,double thickness,vector <Node> NV)
 {
     ifstream fid;
     fid.open(str);
@@ -106,12 +109,14 @@ vector <Q8_Element>  ReadQ8Element(string str,ElasticMaterial mat,double thickne
         NodeObj=SortElementNodeQ8(NodeObj);
         obj.SetNodalObj(NodeObj);
         obj.SetMat(mat);
+        obj.SetLocalCord();
+        obj.SetDMatrix("pstress");
         Q8V.push_back(obj);
     }
     return Q8V;
 }
 
-vector <Q9_Element>  ReadQ9Element(string str,ElasticMaterial mat,double thickness,vector <Node> NV)
+vector <Q9_Element>  ReadQ9Element(string str,ElasticMaterial & mat,double thickness,vector <Node> NV)
 {
     ifstream fid;
     fid.open(str);
@@ -136,6 +141,7 @@ vector <Q9_Element>  ReadQ9Element(string str,ElasticMaterial mat,double thickne
         obj.SetNodalObj(NodeObj);
         obj.SetMat(mat);
         obj.Setlocalcord();
+        obj.SetDMatrix("pstress");
         Q9V.push_back(obj);
     }
     return Q9V;

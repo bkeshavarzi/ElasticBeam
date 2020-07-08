@@ -33,11 +33,10 @@ class Q9_Element
         void SetDMatrix(string);
         void Setlocalcord(void);
         MatrixXd CalcJacobian(double,double);
-        MatrixXd CalcInvJacobian();
+        MatrixXd CalcInvJacobian(double,double);
         double CalcDetJacobian(double,double);
         MatrixXd Getlocalcord();
-        void Calc_LSM();
-        MatrixXd Get_LSM();
+        MatrixXd Calc_LSM();
         void SetU(MatrixXd);
         MatrixXd Get_Ep();
         MatrixXd Get_Sigma();
