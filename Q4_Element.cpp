@@ -90,6 +90,10 @@ double Q4_Element::CalcDetJacobian(double kesi,double eta)
     J=CalcJacobian(kesi,eta);
     double detJ=J.determinant();
     return detJ;
+    if (detJ <0)
+    {
+        cout <<"Error for Q4 element :" << "\t" <<id<<". The det of Jacobian is negetive. detJ =" << "\t" << detJ << endl;
+    }
 }
 double Q4_Element::Calc_DiffN(int kesi_node,int eta_node,double kesi,double eta,string str)
 {
@@ -115,7 +119,6 @@ MatrixXd Q4_Element::Calc_BMatrix(double x_gpt,double y_gpt)
 }
 void Q4_Element::SetDMatrix(string str)
 {
-    MatrixXd D=MatrixXd::Zero(3,3);
     if (str=="pstrain")
     {
         double factor=E/((1+v)*(1-2*v));
@@ -146,8 +149,12 @@ void Q4_Element::Setlocalcord(void)
     }
     a=0.5*(LCord.block(0,0,1,4).maxCoeff()-LCord.block(0,0,1,4).minCoeff());
     b=0.5*(LCord.block(1,0,1,4).maxCoeff()-LCord.block(1,0,1,4).minCoeff());
-    xc=(LCord.block(0,0,1,4).sum())/4;
-    yc=(LCord.block(0,1,1,4).sum())/4;
+    xc=((LCord.block(0,0,1,4)).sum())/4;
+    yc=((LCord.block(1,0,1,4)).sum())/4;
+}
+MatrixXd Q4_Element::Getlocalcord(void)
+{
+    return LCord;
 }
 MatrixXd Q4_Element::Calc_LSM()
 {

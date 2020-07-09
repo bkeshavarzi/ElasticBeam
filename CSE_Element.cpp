@@ -85,6 +85,10 @@ MatrixXd CSE_Element::SetCMatrix()
 void CSE_Element::SetA()
 {
     A=0.5*(SetCMatrix().determinant());
+    if (A <0)
+    {
+        cout << "Error for CSE element :" << "\t" <<id<<". The area is negetive. A =" << "\t" << A << endl;
+    }
 }
 double CSE_Element::GetA()
 {

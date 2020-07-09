@@ -32,6 +32,8 @@ class Q4_Element
         MatrixXd Calc_BMatrix(double,double);
         void SetDMatrix(string);
         void Setlocalcord(void);
+
+        MatrixXd Getlocalcord(void);
         MatrixXd CalcJacobian(double,double);
         MatrixXd CalcInvJacobian(double,double);
         double CalcDetJacobian(double,double);
