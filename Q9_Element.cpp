@@ -13,10 +13,10 @@ Q9_Element::Q9_Element(int i,double thi,vector <Node> obj,ElasticMaterial m)
     SetNodalObj(obj);
     SetMat(m);
 }
-int SignFunction(double d)
+int SignFunction(int d)
 {
     int res;
-    if ((d<0)||(d==0)) res= 1;
+    if ((d>0)||(d==0)) res= 1;
     if (d<0) res=-1;
     return res;
 }
@@ -70,33 +70,48 @@ void Q9_Element::SetElemParam(double prop[])
     gama=prop[2];
     th=prop[3];
 }
+double Q9_Element::f_kesi(int kesi_node,double kesi)
+{
+    double term;
+    if (kesi_node==-1) term=kesi*(1-kesi);
+    if (kesi_node==0)  term=(1-kesi)*(1+kesi);
+    if (kesi_node==1)  term=kesi*(1+kesi);
+    return term;
+}
+double Q9_Element::f_eta(int eta_node,double eta)
+{
+    double term;
+    if (eta_node==-1) term=eta*(1-eta);
+    if (eta_node==0)  term=(1-eta)*(1+eta);
+    if (eta_node==1)  term=eta*(1+eta);
+    return term;
+}
 double Q9_Element::Calc_ShapeFunction(int kesi_node,int eta_node,double kesi,double eta)
 {
-    double term1,term2;
+    int term1=SignFunction(kesi_node);
 
-    if (kesi_node==-1) term1=kesi*(kesi-1);
-    if (kesi_node==0)  term1=(kesi-1)*(kesi+1);
-    if (kesi_node==1)  term1=kesi*(kesi+1);
+    int term2=SignFunction(eta_node);
 
-    if (eta_node==-1)  term2=eta*(eta-1);
-    if (eta_node==0)   term2=(eta+1)*(eta-1);
-    if (eta_node==1)   term2=(eta+1)*(eta);
+    double term3=(1/pow(2,abs(kesi_node)+abs(eta_node)));
 
-    cout << term1 << "\t" << term2 << "\t" <<SignFunction(kesi_node)*SignFunction(eta_node) << "\t" <<(1/pow(2,abs(kesi_node)+abs(eta_node)))<<endl;
+    return f_kesi(kesi_node,kesi)*f_eta(eta_node,eta)*term1*term2*term3;
 
-    return SignFunction(kesi_node)*SignFunction(eta_node)*(1/pow(2,abs(kesi_node)+abs(eta_node)))*term1*term2;
 }
 double Q9_Element::Calc_DiffN(int kesi_node,int eta_node,double kesi,double eta,string str)
 {
     double term;
-    if ((str=="kesi")&&(kesi_node==-1)) term= (2*kesi-1)*(eta_node==-1?eta*(eta-1):1)*(eta_node==0?(eta+1)*(eta-1):1)*(eta_node==1?(eta+1)*(eta):1);
-    if ((str=="kesi")&&(kesi_node==0))  term= (2*kesi)*(eta_node==-1?eta*(eta-1):1)*(eta_node==0?(eta+1)*(eta-1):1)*(eta_node==1?(eta+1)*(eta):1);
-    if ((str=="kesi")&&(kesi_node==1))  term= (2*kesi+1)*(eta_node==-1?eta*(eta-1):1)*(eta_node==0?(eta+1)*(eta-1):1)*(eta_node==1?(eta+1)*(eta):1);
-    if ((str=="eta")&&(eta_node==-1))   term= (2*eta-1)*(kesi_node==-1?kesi*(kesi-1):1)*(kesi_node==0?(kesi+1)*(kesi-1):1)*(kesi_node==1?(kesi+1)*(kesi):1);
-    if ((str=="eta")&&(eta_node==0))    term= (2*eta)*(kesi_node==-1?kesi*(kesi-1):1)*(kesi_node==0?(kesi+1)*(kesi-1):1)*(kesi_node==1?(kesi+1)*(kesi):1);
-    if ((str=="eta")&&(eta_node==1))    term= (2*eta+1)*(kesi_node==-1?kesi*(kesi-1):1)*(kesi_node==0?(kesi+1)*(kesi-1):1)*(kesi_node==1?(kesi+1)*(kesi):1);
 
-    return SignFunction(kesi_node)*SignFunction(eta_node)*(1/pow(2,abs(kesi_node)+abs(eta_node)))*term;
+    if ((str=="kesi")&&(kesi_node==-1)) term= (1-2*kesi)*f_eta(eta_node,eta);
+    if ((str=="kesi")&&(kesi_node==0))  term= (-1*2*kesi)*f_eta(eta_node,eta);
+    if ((str=="kesi")&&(kesi_node==1))  term= (1+2*kesi)*f_eta(eta_node,eta);
+
+    if ((str=="eta")&&(eta_node==-1))   term= (1-2*eta)*f_kesi(kesi_node,kesi);
+    if ((str=="eta")&&(eta_node==0))    term= (-1*2*eta)*f_kesi(kesi_node,kesi);
+    if ((str=="eta")&&(eta_node==1))    term= (1+2*eta)*f_kesi(kesi_node,kesi);
+
+    double term2=abs(kesi_node)*1.0+abs(eta_node)*1.0;
+
+    return (SignFunction(kesi_node)*SignFunction(eta_node)*(1/pow(2,term2))*term);
 }
 MatrixXd Q9_Element::Calc_BMatrix(double x_gpt,double y_gpt)
 {
@@ -181,7 +196,7 @@ double Q9_Element::CalcDetJacobian(double kesi,double eta)
 {
     return (CalcJacobian(kesi,eta).determinant());
 }
-MatrixXd Q9_Element::Getlocalcord()
+MatrixXd Q9_Element::GetLocalCord()
 {
     return LCord;
 }

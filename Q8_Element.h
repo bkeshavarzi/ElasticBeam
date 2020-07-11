@@ -26,6 +26,7 @@ class Q8_Element : public Q4_Element,Q9_Element
         MatrixXd Calc_BMatrix(double,double);
         void SetDMatrix(string);
         void SetLocalCord(void);
+        MatrixXd GetLocalCord(void);
         MatrixXd CalcJacobian(double,double);
         MatrixXd CalcInvJacobian(double,double);
         double CalcDetJacobian(double,double);

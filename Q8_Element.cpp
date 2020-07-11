@@ -75,18 +75,25 @@ double Q8_Element::Calc_DiffN(int kesi_node,int eta_node,double kesi,double eta,
 
     if ((str=="kesi")&&(kesi_node==-1)&&(eta_node==-1)) term=Q4_Element::Calc_DiffN(-1,-1,kesi,eta,"kesi")-0.5*Q9_Element::Calc_DiffN(0,-1,kesi,eta,"kesi")-0.5*Q9_Element::Calc_DiffN(-1,0,kesi,eta,"kesi");
     if ((str=="eta")&&(kesi_node==-1)&&(eta_node==-1))  term=Q4_Element::Calc_DiffN(-1,-1,kesi,eta,"eta")-0.5*Q9_Element::Calc_DiffN(0,-1,kesi,eta,"eta")-0.5*Q9_Element::Calc_DiffN(-1,0,kesi,eta,"eta");
-    if ((str=="kesi")&&(kesi_node==0)&&(eta_node==-1))  term=kesi*(eta-1);
+
+    if ((str=="kesi")&&(kesi_node==0)&&(eta_node==-1))  term=kesi*(-1+eta);
     if ((str=="eta")&&(kesi_node==0)&&(eta_node==-1))   term=0.5*(pow(kesi,2)-1);
+
     if ((str=="kesi")&&(kesi_node==1)&&(eta_node==-1))  term=Q4_Element::Calc_DiffN(1,-1,kesi,eta,"kesi")-0.5*Q9_Element::Calc_DiffN(0,-1,kesi,eta,"kesi")-0.5*Q9_Element::Calc_DiffN(1,0,kesi,eta,"kesi");
     if ((str=="eta")&&(kesi_node==1)&&(eta_node==-1))   term=Q4_Element::Calc_DiffN(1,-1,kesi,eta,"eta")-0.5*Q9_Element::Calc_DiffN(0,-1,kesi,eta,"eta")-0.5*Q9_Element::Calc_DiffN(1,0,kesi,eta,"eta");
+
     if ((str=="kesi")&&(kesi_node==1)&&(eta_node==0))   term=-0.5*(pow(eta,2)-1);
     if ((str=="eta")&&(kesi_node==1)&&(eta_node==0))    term=-1*eta*(kesi+1);
+
     if ((str=="kesi")&&(kesi_node==-1)&&(eta_node==0))  term=0.5*(pow(eta,2)-1);
     if ((str=="eta")&&(kesi_node==-1)&&(eta_node==0))   term=eta*(kesi-1);
+
     if ((str=="kesi")&&(kesi_node==-1)&&(eta_node==1))  term=Q4_Element::Calc_DiffN(-1,1,kesi,eta,"kesi")-0.5*Q9_Element::Calc_DiffN(-1,0,kesi,eta,"kesi")-0.5*Q9_Element::Calc_DiffN(0,1,kesi,eta,"kesi");
     if ((str=="eta")&&(kesi_node==-1)&&(eta_node==1))   term=Q4_Element::Calc_DiffN(-1,1,kesi,eta,"eta")-0.5*Q9_Element::Calc_DiffN(-1,0,kesi,eta,"eta")-0.5*Q9_Element::Calc_DiffN(0,1,kesi,eta,"eta");
-    if ((str=="kesi")&&(kesi_node==0)&&(eta_node==1))   term=-0.5*kesi*(eta+1);
+
+    if ((str=="kesi")&&(kesi_node==0)&&(eta_node==1))   term=-1*kesi*(eta+1);
     if ((str=="eta")&&(kesi_node==0)&&(eta_node==1))    term=-0.5*(pow(kesi,2)-1);
+
     if ((str=="kesi")&&(kesi_node==1)&&(eta_node==1))   term=Q4_Element::Calc_DiffN(1,1,kesi,eta,"kesi")-0.5*Q9_Element::Calc_DiffN(0,1,kesi,eta,"kesi")-0.5*Q9_Element::Calc_DiffN(1,0,kesi,eta,"kesi");
     if ((str=="eta")&&(kesi_node==1)&&(eta_node==1))    term=Q4_Element::Calc_DiffN(1,1,kesi,eta,"eta")-0.5*Q9_Element::Calc_DiffN(0,1,kesi,eta,"eta")-0.5*Q9_Element::Calc_DiffN(1,0,kesi,eta,"eta");
 
@@ -153,8 +160,8 @@ void Q8_Element::SetLocalCord(void)
 }
 MatrixXd Q8_Element::CalcJacobian(double kesi,double eta)
 {
-    double kesinode;
-    double etanode;
+    int kesinode;
+    int etanode;
     MatrixXd J=MatrixXd::Zero(2,2);
 
     for (int inode=0;inode<8;inode++)
@@ -167,6 +174,12 @@ MatrixXd Q8_Element::CalcJacobian(double kesi,double eta)
         J(1,1)+=LCord(1,inode)*Calc_DiffN(kesinode,etanode,kesi,eta,"eta");
     }
     return J;
+}
+MatrixXd Q8_Element::GetLocalCord()
+{
+    cout << a << "\t" << b << "\t" << xc << "\t" << yc << endl;
+    cout << "****************************" <<endl;
+    return LCord;
 }
 MatrixXd Q8_Element::CalcInvJacobian(double kesi,double eta)
 {
