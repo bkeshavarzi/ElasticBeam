@@ -58,14 +58,14 @@ double Q8_Element::Calc_ShapeFunction(int kesi_node,int eta_node,double kesi,dou
 {
     double term=0;
 
-    if ((kesi_node==-1)&&(eta_node==-1))   term=(Q4_Element::Calc_ShapeFunction(-1,-1,kesi,eta))-0.5*(Q9_Element::Calc_ShapeFunction(0,-1,kesi,eta))-0.5*(Q9_Element::Calc_ShapeFunction(-1,0,kesi,eta));
+    if ((kesi_node==-1)&&(eta_node==-1))   term=-0.25*(1-kesi)*(1-eta)*(1+kesi+eta);
     if ((kesi_node==0)&&(eta_node==-1))    term=0.5*(kesi+1)*(kesi-1)*(eta-1);
-    if ((kesi_node==1)&&(eta_node==-1))    term=Q4_Element::Calc_ShapeFunction(1,-1,kesi,eta)-0.5*Q9_Element::Calc_ShapeFunction(0,-1,kesi,eta)-0.5*Q9_Element::Calc_ShapeFunction(1,0,kesi,eta);
+    if ((kesi_node==1)&&(eta_node==-1))    term=-0.25*(1+kesi)*(1-eta)*(1-kesi+eta);
     if ((kesi_node==1)&&(eta_node==0))     term=-0.5*(eta-1)*(kesi+1)*(eta+1);
     if ((kesi_node==-1)&&(eta_node==0))    term=0.5*(eta-1)*(kesi-1)*(eta+1);
-    if ((kesi_node==-1)&&(eta_node==1))    term=Q4_Element::Calc_ShapeFunction(-1,1,kesi,eta)-0.5*Q9_Element::Calc_ShapeFunction(-1,0,kesi,eta)-0.5*Q9_Element::Calc_ShapeFunction(0,1,kesi,eta);
+    if ((kesi_node==-1)&&(eta_node==1))    term=-0.25*(1-kesi)*(1+eta)*(1+kesi-eta);
     if ((kesi_node==0)&&(eta_node==1))     term=-0.5*(kesi+1)*(kesi-1)*(eta+1);
-    if ((kesi_node==1)&&(eta_node==1))     term=Q4_Element::Calc_ShapeFunction(1,1,kesi,eta)-0.5*Q9_Element::Calc_ShapeFunction(0,1,kesi,eta)-0.5*Q9_Element::Calc_ShapeFunction(1,0,kesi,eta);
+    if ((kesi_node==1)&&(eta_node==1))     term=-0.25*(1+kesi)*(1+eta)*(1-kesi-eta);
 
     return term;
 }
@@ -73,14 +73,14 @@ double Q8_Element::Calc_DiffN(int kesi_node,int eta_node,double kesi,double eta,
 {
     double term;
 
-    if ((str=="kesi")&&(kesi_node==-1)&&(eta_node==-1)) term=Q4_Element::Calc_DiffN(-1,-1,kesi,eta,"kesi")-0.5*Q9_Element::Calc_DiffN(0,-1,kesi,eta,"kesi")-0.5*Q9_Element::Calc_DiffN(-1,0,kesi,eta,"kesi");
-    if ((str=="eta")&&(kesi_node==-1)&&(eta_node==-1))  term=Q4_Element::Calc_DiffN(-1,-1,kesi,eta,"eta")-0.5*Q9_Element::Calc_DiffN(0,-1,kesi,eta,"eta")-0.5*Q9_Element::Calc_DiffN(-1,0,kesi,eta,"eta");
+    if ((str=="kesi")&&(kesi_node==-1)&&(eta_node==-1)) term=-0.25*-1*(1-eta)*(1+kesi+eta)-0.25*(1-kesi)*(1-eta);
+    if ((str=="eta")&&(kesi_node==-1)&&(eta_node==-1))  term=-0.25*-1*(1-kesi)*(1+kesi+eta)-0.25*(1-kesi)*(1-eta);
 
     if ((str=="kesi")&&(kesi_node==0)&&(eta_node==-1))  term=kesi*(-1+eta);
     if ((str=="eta")&&(kesi_node==0)&&(eta_node==-1))   term=0.5*(pow(kesi,2)-1);
 
-    if ((str=="kesi")&&(kesi_node==1)&&(eta_node==-1))  term=Q4_Element::Calc_DiffN(1,-1,kesi,eta,"kesi")-0.5*Q9_Element::Calc_DiffN(0,-1,kesi,eta,"kesi")-0.5*Q9_Element::Calc_DiffN(1,0,kesi,eta,"kesi");
-    if ((str=="eta")&&(kesi_node==1)&&(eta_node==-1))   term=Q4_Element::Calc_DiffN(1,-1,kesi,eta,"eta")-0.5*Q9_Element::Calc_DiffN(0,-1,kesi,eta,"eta")-0.5*Q9_Element::Calc_DiffN(1,0,kesi,eta,"eta");
+    if ((str=="kesi")&&(kesi_node==1)&&(eta_node==-1))  term=-0.25*(1-eta)*(1-kesi+eta)-0.25*(1+kesi)*(1-eta)*-1;
+    if ((str=="eta")&&(kesi_node==1)&&(eta_node==-1))   term=-0.25*(1+kesi)*-1*(1-kesi+eta)-0.25*(1+kesi)*(1-eta);
 
     if ((str=="kesi")&&(kesi_node==1)&&(eta_node==0))   term=-0.5*(pow(eta,2)-1);
     if ((str=="eta")&&(kesi_node==1)&&(eta_node==0))    term=-1*eta*(kesi+1);
@@ -88,14 +88,14 @@ double Q8_Element::Calc_DiffN(int kesi_node,int eta_node,double kesi,double eta,
     if ((str=="kesi")&&(kesi_node==-1)&&(eta_node==0))  term=0.5*(pow(eta,2)-1);
     if ((str=="eta")&&(kesi_node==-1)&&(eta_node==0))   term=eta*(kesi-1);
 
-    if ((str=="kesi")&&(kesi_node==-1)&&(eta_node==1))  term=Q4_Element::Calc_DiffN(-1,1,kesi,eta,"kesi")-0.5*Q9_Element::Calc_DiffN(-1,0,kesi,eta,"kesi")-0.5*Q9_Element::Calc_DiffN(0,1,kesi,eta,"kesi");
-    if ((str=="eta")&&(kesi_node==-1)&&(eta_node==1))   term=Q4_Element::Calc_DiffN(-1,1,kesi,eta,"eta")-0.5*Q9_Element::Calc_DiffN(-1,0,kesi,eta,"eta")-0.5*Q9_Element::Calc_DiffN(0,1,kesi,eta,"eta");
+    if ((str=="kesi")&&(kesi_node==-1)&&(eta_node==1))  term=-0.25*-1*(1+eta)*(1+kesi-eta)-0.25*(1-kesi)*(1+eta);
+    if ((str=="eta")&&(kesi_node==-1)&&(eta_node==1))   term=-0.25*(1-kesi)*(1+kesi-eta)+0.25*(1-kesi)*(1+eta);
 
     if ((str=="kesi")&&(kesi_node==0)&&(eta_node==1))   term=-1*kesi*(eta+1);
     if ((str=="eta")&&(kesi_node==0)&&(eta_node==1))    term=-0.5*(pow(kesi,2)-1);
 
-    if ((str=="kesi")&&(kesi_node==1)&&(eta_node==1))   term=Q4_Element::Calc_DiffN(1,1,kesi,eta,"kesi")-0.5*Q9_Element::Calc_DiffN(0,1,kesi,eta,"kesi")-0.5*Q9_Element::Calc_DiffN(1,0,kesi,eta,"kesi");
-    if ((str=="eta")&&(kesi_node==1)&&(eta_node==1))    term=Q4_Element::Calc_DiffN(1,1,kesi,eta,"eta")-0.5*Q9_Element::Calc_DiffN(0,1,kesi,eta,"eta")-0.5*Q9_Element::Calc_DiffN(1,0,kesi,eta,"eta");
+    if ((str=="kesi")&&(kesi_node==1)&&(eta_node==1))   term=-0.25*(1+eta)*(1-kesi-eta)-0.25*(1+kesi)*(1+eta)*-1;
+    if ((str=="eta")&&(kesi_node==1)&&(eta_node==1))    term=0.25*(1+kesi)*(1-kesi-eta)-0.25*(1+kesi)*(1+eta)*-1;
 
     return term;
 }

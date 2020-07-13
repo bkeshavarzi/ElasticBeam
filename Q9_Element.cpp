@@ -222,7 +222,11 @@ void Q9_Element::SetU(MatrixXd Ue)
 {
     U=Ue;
 }
-MatrixXd Q9_Element::Get_Ep()
+MatrixXd Q9_Element::GetU()
+{
+    return U;
+}
+void Q9_Element::Set_Ep()
 {
     Ep.block(0,0,3,1)=Calc_BMatrix(gpt[0],gpt[0])*U;
     Ep.block(0,1,3,1)=Calc_BMatrix(gpt[1],gpt[0])*U;
@@ -235,10 +239,12 @@ MatrixXd Q9_Element::Get_Ep()
     Ep.block(0,6,3,1)=Calc_BMatrix(gpt[0],gpt[2])*U;
     Ep.block(0,7,3,1)=Calc_BMatrix(gpt[1],gpt[2])*U;
     Ep.block(0,8,3,1)=Calc_BMatrix(gpt[2],gpt[2])*U;
-
+}
+MatrixXd Q9_Element::Get_Ep()
+{
     return Ep;
 }
-MatrixXd Q9_Element::Get_Sigma()
+void Q9_Element::Set_Sigma()
 {
     Sigma.block(0,0,3,1)=D*Ep.block(0,0,3,1);
     Sigma.block(0,1,3,1)=D*Ep.block(0,1,3,1);
@@ -252,9 +258,12 @@ MatrixXd Q9_Element::Get_Sigma()
     Sigma.block(0,7,3,1)=D*Ep.block(0,7,3,1);
     Sigma.block(0,8,3,1)=D*Ep.block(0,8,3,1);
 
+}
+MatrixXd Q9_Element::Get_Sigma()
+{
     return Sigma;
 }
-MatrixXd Q9_Element::Get_PSigma(string str)
+void Q9_Element::Set_PSigma(string str)
 {
     MatrixXd Sigma_Ave=0.5*(Sigma.block(0,0,2,9).colwise().sum()); //n x 1
     MatrixXd R=pow(pow(0.5*(Sigma.block(0,0,1,9).array()-Sigma.block(1,0,1,9).array()),2.0)+pow(Sigma.block(2,0,1,9).array(),2.0),0.5).matrix();
@@ -262,10 +271,12 @@ MatrixXd Q9_Element::Get_PSigma(string str)
     PSigma.block(1,0,1,9)=Sigma_Ave-R;
     if (str=="pstrain") PSigma.block(2,0,1,9)=(v*(PSigma.block(0,0,1,9)+PSigma.block(1,0,1,9)).array()).matrix();
     if (str=="pstress") PSigma.block(2,0,1,9)=MatrixXd::Zero(1,9);
-
+}
+MatrixXd Q9_Element::Get_PSigma()
+{
     return PSigma;
 }
-MatrixXd Q9_Element::Get_PStrain(string str)
+void Q9_Element::Set_PStrain(string str)
 {
     MatrixXd Strain_Ave=0.5*(Ep.block(0,0,2,9).colwise().sum()); //n x 1
     MatrixXd R=pow(pow(0.5*(Ep.block(0,0,1,9).array()-Ep.block(1,0,1,9).array()),2.0)+pow(Ep.block(2,0,1,9).array(),2.0),0.5).matrix();
@@ -273,7 +284,9 @@ MatrixXd Q9_Element::Get_PStrain(string str)
     PStrain.block(1,0,1,9)=Strain_Ave-R;
     if (str=="pstress") PStrain.block(2,0,1,9)=((v/E)*(PSigma.block(0,0,1,9)+PSigma.block(1,0,1,9)).array()).matrix();
     if (str=="pstrain") PStrain.block(2,0,1,9)=MatrixXd::Zero(1,9);
-
+}
+MatrixXd Q9_Element::Get_PStrain()
+{
     return PStrain;
 }
 Q9_Element::~Q9_Element()

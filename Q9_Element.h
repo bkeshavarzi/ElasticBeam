@@ -41,10 +41,15 @@ class Q9_Element
         MatrixXd GetLocalCord();
         MatrixXd Calc_LSM();
         void SetU(MatrixXd);
+        MatrixXd GetU();
+        void Set_Ep();
+        void Set_Sigma();
+        void Set_PSigma(string);
+        void Set_PStrain(string);
         MatrixXd Get_Ep();
         MatrixXd Get_Sigma();
-        MatrixXd Get_PSigma(string);
-        MatrixXd Get_PStrain(string);
+        MatrixXd Get_PSigma();
+        MatrixXd Get_PStrain();
         friend int SignFunction(double);
         virtual ~Q9_Element();
 

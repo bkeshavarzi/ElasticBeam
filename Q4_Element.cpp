@@ -176,25 +176,33 @@ void Q4_Element::SetU(MatrixXd Ue)
 {
     U=Ue;
 }
-MatrixXd Q4_Element::Get_Ep()
+MatrixXd Q4_Element::GetU()
+{
+    return U;
+}
+void Q4_Element::Set_Ep()
 {
     Ep.block(0,0,3,1)=Calc_BMatrix(gpt[0],gpt[0])*U;
     Ep.block(0,1,3,1)=Calc_BMatrix(gpt[1],gpt[0])*U;
     Ep.block(0,2,3,1)=Calc_BMatrix(gpt[1],gpt[1])*U;
     Ep.block(0,3,3,1)=Calc_BMatrix(gpt[0],gpt[1])*U;
-
-    return Ep;
 }
-MatrixXd Q4_Element::Get_Sigma()
+MatrixXd Q4_Element::Get_Ep()
+{
+     return Ep;
+}
+void Q4_Element::Set_Sigma()
 {
     Sigma.block(0,0,3,1)=D*Ep.block(0,0,3,1);
     Sigma.block(0,1,3,1)=D*Ep.block(0,1,3,1);
     Sigma.block(0,2,3,1)=D*Ep.block(0,2,3,1);
     Sigma.block(0,3,3,1)=D*Ep.block(0,3,3,1);
-
-    return Sigma;
 }
-MatrixXd Q4_Element::Get_PSigma(string str)
+MatrixXd Q4_Element::Get_Sigma()
+{
+     return Ep;
+}
+void Q4_Element::Set_PSigma(string str)
 {
     MatrixXd Sigma_Ave=0.5*(Sigma.block(0,0,2,4).colwise().sum()); //1 x n
     MatrixXd R=pow(pow(0.5*(Sigma.block(0,0,1,4).array()-Sigma.block(1,0,1,4).array()),2.0)+pow(Sigma.block(2,0,1,4).array(),2.0),0.5).matrix();
@@ -202,10 +210,12 @@ MatrixXd Q4_Element::Get_PSigma(string str)
     PSigma.block(1,0,1,4)=Sigma_Ave-R;
     if (str=="pstrain") PSigma.block(2,0,1,4)=(v*(PSigma.block(0,0,1,4)+PSigma.block(1,0,1,4)).array()).matrix();
     if (str=="pstress") PSigma.block(2,0,1,4)=MatrixXd::Zero(1,4);
-
+}
+MatrixXd Q4_Element::Get_PSigma(void)
+{
     return PSigma;
 }
-MatrixXd Q4_Element::Get_PStrain(string str)
+void Q4_Element::Set_PStrain(string str)
 {
     MatrixXd Strain_Ave=0.5*(Ep.block(0,0,2,4).colwise().sum()); //n x 1
     MatrixXd R=pow(pow(0.5*(Ep.block(0,0,1,4).array()-Ep.block(1,0,1,4).array()),2.0)+pow(Ep.block(2,0,1,4).array(),2.0),0.5).matrix();
@@ -213,7 +223,9 @@ MatrixXd Q4_Element::Get_PStrain(string str)
     PStrain.block(1,0,1,4)=Strain_Ave-R;
     if (str=="pstress") PStrain.block(2,0,1,4)=((v/E)*(PSigma.block(0,0,1,4)+PSigma.block(1,0,1,4)).array()).matrix();
     if (str=="pstrain") PStrain.block(2,0,1,4)=MatrixXd::Zero(1,4);
-
+}
+MatrixXd Q4_Element::Get_PStrain()
+{
     return PStrain;
 }
 Q4_Element::~Q4_Element()

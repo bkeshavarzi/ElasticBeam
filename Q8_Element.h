@@ -5,7 +5,7 @@
 #include "Q9_Element.h"
 //WATCH OUT FOR NODE NUMBERING IN MESH DATA AND CONSIDERED NODE NUMERING IN ELEMENT CLASS
 
-class Q8_Element : public Q4_Element,Q9_Element
+class Q8_Element
 {
     public:
 

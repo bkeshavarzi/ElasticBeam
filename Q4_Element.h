@@ -39,11 +39,15 @@ class Q4_Element
         double CalcDetJacobian(double,double);
         MatrixXd Calc_LSM();
         void SetU(MatrixXd);
+        MatrixXd GetU(void);
+        void Set_Ep();
         MatrixXd Get_Ep();
+        void Set_Sigma();
         MatrixXd Get_Sigma();
-        MatrixXd Get_PSigma(string);
-        MatrixXd Get_PStrain(string);
-
+        void Set_PSigma(string);
+        MatrixXd Get_PSigma();
+        void Set_PStrain(string);
+        MatrixXd Get_PStrain(void);
         virtual ~Q4_Element();
 
     protected:
