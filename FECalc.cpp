@@ -4,16 +4,16 @@
 MatrixXd BoundryCondition(vector <Node> NV)
 {
     vector <double> temp;
-    MatrixXd FDOF=MatrixXd::Zero(2*NV.size(),1);
+    MatrixXd FDOF=MatrixXd::Ones(2*NV.size(),1);
 
     for (int inode=0;inode<NV.size();inode++)
     {
         temp=NV[inode].GetCord();
-        // 0=restraiend, 1=free;
-        if (temp[0]!=0)
+        // 0=restrained, 1=free;
+        if (temp[0]==0)
         {
-            FDOF(2*inode)=1;
-            FDOF(2*inode+1)=1;
+            FDOF(2*inode)=0;
+            FDOF(2*inode+1)=0;
         }
     }
     return FDOF;
@@ -22,12 +22,14 @@ MatrixXd AssembleForceVector(vector <Node> NV)
 {
     MatrixXd FV=MatrixXd::Zero(2*NV.size(),1);
     vector <double> temp;
+    double eps=0.001;
 
     for (int inode=0;inode<NV.size();inode++)
     {
         temp=NV[inode].GetCord();
-        if ((temp[0]==3)&&(temp[0]==0.5))
+        if ((abs(temp[0]-3)<eps)&&(abs(temp[1]-0.5)<eps))
         {
+            cout << "Assigning force value" <<endl;
             FV(2*inode)=0;
             FV(2*inode+1)=-3000;
         }
@@ -168,12 +170,27 @@ MatrixXd CondenseStiffnessMatrix(vector <Node> NV,MatrixXd KG,MatrixXd FDOF)
     }
     return FKG;
 }
-MatrixXd Solve_CSE(vector <Node> NV,vector <CSE_Element> EV,MatrixXd FG,MatrixXd KG,MatrixXd FDOF)
+MatrixXd CondenseForceVector(vector <Node> NV,MatrixXd FV,MatrixXd FDOF)
+{
+    int nfreedof=FDOF.sum();
+    MatrixXd FFV=MatrixXd::Zero(nfreedof,nfreedof);
+    int icounter=-1;
+    for (int idof=0;idof<2*NV.size();idof++)
+    {
+        if (FDOF(idof)==1)
+        {
+            icounter++;
+            FFV(icounter)=FV(idof);
+        }
+    }
+    return FFV;
+}
+MatrixXd Solve_CSE(vector <Node> NV,vector <CSE_Element> EV,MatrixXd FFV,MatrixXd KG,MatrixXd FDOF)
 {
     MatrixXd UG=MatrixXd::Zero(FDOF.sum(),1);
     MatrixXd UT=MatrixXd::Zero(2*NV.size(),1);
     MatrixXd U=MatrixXd::Zero(6,1);
-    UG=KG.inverse()*FG;
+    UG=KG.inverse()*FFV;
     vector <Node> obj;
     int id=-1,dof;
 
@@ -196,22 +213,22 @@ MatrixXd Solve_CSE(vector <Node> NV,vector <CSE_Element> EV,MatrixXd FG,MatrixXd
             U(2*inode+1)=UT(2*(obj[inode].GetId()-1)+1);
         }
         EV[ielem].SetU(U);
-        EV[ielem].CalculateStrainTensor();
-        EV[ielem].CalculateStressTensor();
-        EV[ielem].CalculatePrinStress("plane stress");
-        EV[ielem].CalculatePrinStrain("plane stress");
+        //EV[ielem].CalculateStrainTensor();
+        //EV[ielem].CalculateStressTensor();
+        //EV[ielem].CalculatePrinStress("plane stress");
+        //EV[ielem].CalculatePrinStrain("plane stress");
     }
 
     return UT;
 }
 
 
-MatrixXd Solve_Q4(vector <Node> NV,vector <Q4_Element> EV,MatrixXd FG,MatrixXd KG,MatrixXd FDOF)
+MatrixXd Solve_Q4(vector <Node> NV,vector <Q4_Element> EV,MatrixXd FFV,MatrixXd KG,MatrixXd FDOF)
 {
     MatrixXd UG=MatrixXd::Zero(FDOF.sum(),1);
     MatrixXd UT=MatrixXd::Zero(2*NV.size(),1);
     MatrixXd U=MatrixXd::Zero(8,1);
-    UG=KG.inverse()*FG;
+    UG=KG.inverse()*FFV;
     vector <Node> obj;
     int id=-1,dof;
 

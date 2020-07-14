@@ -252,3 +252,30 @@ vector <Node> SortElementNodeQ9(vector <Node> Nobj)
 
     return OutNode;
 }
+
+void WriteOutPutFile_CSE(MatrixXd FU, vector <Node> NV,vector <CSE_Element> EV)
+{
+    ofstream fidd("Displacement.txt");
+    ofstream fids("Stress_Strain.txt");
+
+    vector <double> temp;
+
+    MatrixXd Ep=MatrixXd::Zero(3,1);
+    MatrixXd Sigma=MatrixXd::Zero(3,1);
+    MatrixXd PSigma=MatrixXd::Zero(3,1);
+    MatrixXd PStrain=MatrixXd::Zero(3,1);
+
+    for (int inode=0;inode<NV.size();inode++)
+    {
+        temp=NV[inode].GetCord();
+        fidd << inode << "\t" << temp[0] << "\t" << temp[1] << "\t" << FU(2*inode) << "\t" << FU(2*inode+1) <<endl;
+    }
+    for (int ielem=0;ielem<EV.size();ielem++)
+    {
+        Ep=EV[ielem].CalculateStrainTensor();
+        Sigma=EV[ielem].CalculateStressTensor();
+        PSigma=EV[ielem].CalculatePrinStress("plane stress");
+        PStrain=EV[ielem].CalculatePrinStrain("plane stress");
+        fids <<Ep(0)<<"\t"<<Ep(1)<<"\t"<<Ep(2)<<Sigma(0)<<"\t"<<Sigma(1)<<"\t"<<Sigma(2)<<"\t"<<PSigma(0)<<"\t"<<PSigma(1)<<"\t"<<PSigma(2)<<PStrain(0)<<"\t"<<PStrain(1)<<"\t"<<PStrain(2)<<endl;
+    }
+}

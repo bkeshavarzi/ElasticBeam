@@ -1,6 +1,7 @@
 # depslib dependency file v1.0
-1594658833 source:c:\users\behroozkeshavarzi\documents\beam\elasticbeam\main.cpp
+1594758795 source:c:\users\behroozkeshavarzi\documents\beam\elasticbeam\main.cpp
 	<iostream>
+	<fstream>
 	<vector>
 	<Eigen/Dense>
 	"Node.h"
@@ -9,6 +10,7 @@
 	"Q8_Element.h"
 	"Q9_Element.h"
 	"TextFiles.h"
+	"FEProp.h"
 
 1594169140 source:c:\users\behroozkeshavarzi\documents\beam\elasticbeam\elasticmaterial.cpp
 	"ElasticMaterial.h"
@@ -55,13 +57,13 @@
 	"Node.h"
 	<cmath>
 
-1594405695 source:c:\users\behroozkeshavarzi\documents\beam\elasticbeam\q9_element.cpp
+1594660833 source:c:\users\behroozkeshavarzi\documents\beam\elasticbeam\q9_element.cpp
 	"Q9_Element.h"
 
-1594253729 source:c:\users\behroozkeshavarzi\documents\beam\elasticbeam\readtextfile.cpp
+1594758543 source:c:\users\behroozkeshavarzi\documents\beam\elasticbeam\readtextfile.cpp
 	"TextFiles.h"
 
-1594169629 c:\users\behroozkeshavarzi\documents\beam\elasticbeam\textfiles.h
+1594757245 c:\users\behroozkeshavarzi\documents\beam\elasticbeam\textfiles.h
 	<iostream>
 	<vector>
 	<fstream>
@@ -78,10 +80,10 @@
 1591014553 source:c:\users\behroozkeshavarzi\documents\beam\elasticbeam\node.cpp
 	"Node.h"
 
-1594660412 source:c:\users\behroozkeshavarzi\documents\beam\elasticbeam\fecalc.cpp
+1594758867 source:c:\users\behroozkeshavarzi\documents\beam\elasticbeam\fecalc.cpp
 	"FEProp.h"
 
-1594660361 c:\users\behroozkeshavarzi\documents\beam\elasticbeam\feprop.h
+1594754649 c:\users\behroozkeshavarzi\documents\beam\elasticbeam\feprop.h
 	<iostream>
 	<Eigen/Dense>
 	"Node.h"

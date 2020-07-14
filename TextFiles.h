@@ -21,6 +21,7 @@ vector <Q9_Element>  ReadQ9Element(string,ElasticMaterial &,double,vector <Node>
 vector <Node> SortElementNodeQ4(vector <Node>);
 vector <Node> SortElementNodeQ8(vector <Node>);
 vector <Node> SortElementNodeQ9(vector <Node>);
+void WriteOutPutFile_CSE(MatrixXd, vector <Node>,vector <CSE_Element>);
 //MatrixXd MakeNodeMatrix(vector <Node>);
 //MatrixXd MakeQ4Matrix(vector <Q4_Element>);
 //MatrixXd MakeQ8Matrix(vector <Q8_Element>);
