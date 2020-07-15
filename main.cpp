@@ -22,26 +22,21 @@ int main()
     vector <Node> NV=ReadNodeFile("CSE_Node.txt");
     vector <CSE_Element> EV=ReadCSEElement("CSE_Element.txt",m,0.002,NV);
 
-    cout << "Total number of nodes are: " <<NV.size()<<endl;
-    cout << "Total number of elements are: " <<EV.size()<<endl;
+    //cout << "Total number of nodes are: " <<NV.size()<<endl;
+    //cout << "Total number of elements are: " <<EV.size()<<endl;
+
 
     MatrixXd FDOF=BoundryCondition(NV);
     MatrixXd FV=AssembleForceVector(NV);
-
     MatrixXd KG=AssembleStiffnessMatrix_CSE(NV,EV);
-    MatrixXd FKG=CondenseStiffnessMatrix(NV,KG,FDOF);
-    MatrixXd FFV=CondenseForceVector(NV,FV,FDOF);
+    MatrixXd FKG=CondenseStiffnessMatrix_CSE(NV,KG,FDOF);
+    MatrixXd FFV=CondenseForceVector_CSE(NV,FV,FDOF);
 
-    cout << "Number of Restrained DOF are : " << 2*NV.size()-FDOF.sum()<<endl;
-    //cout << "Number of elements in force vector are : " << FV.minCoeff()<<endl;
-    //cout << "Number of rows and columns in stiffness are : " << KG.rows()<< "\t" << KG.cols() << endl;
-    cout << "Number of free dof in stiffness are : " << FKG.rows()<< "\t" << FKG.cols() << endl;
-    //cout << "Number of free dof in force are : " << FFV.rows()<<endl;
+    MatrixXd UG=MatrixXd::Zero(FDOF.sum(),1);
+    MatrixXd UT=MatrixXd::Zero(2*NV.size(),1);
+    MatrixXd U=MatrixXd::Zero(6,1);
 
-    //MatrixXd FU=Solve_CSE(NV,EV,FFV,FKG,FDOF);
-    cout << (FKG.squaredNorm())*((FKG.inverse()).squaredNorm()) <<endl;
-    //cout << FU.minCoeff() <<endl;
-    //cout << FU.maxCoeff() <<endl;
+    Solve_CSE(NV,EV,FFV,FKG,FDOF);
+    //WriteOutPutFile_CSE(U,NV,EV);
 
-    //WriteOutPutFile_CSE(FU,NV,EV);
 }
