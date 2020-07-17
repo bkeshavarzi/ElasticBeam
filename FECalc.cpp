@@ -10,7 +10,7 @@ MatrixXd BoundryCondition(vector <Node> NV)
     {
         temp=NV[inode].GetCord();
         // 0=restrained, 1=free;
-        if (temp[1]==0)
+        if (temp[0]==0)
         {
             FDOF(2*inode)=0;
             FDOF(2*inode+1)=0;
